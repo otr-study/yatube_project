@@ -13,7 +13,7 @@ class PostAdmin(admin.ModelAdmin):
     list_editable = ('group',)
     search_fields = ('text',)
     list_filter = ('pub_date',)
-    emty_value_display = '-пусто-'
+    empty_value_display = '-пусто-'
 
 
 class GroupAdmin(admin.ModelAdmin):
@@ -22,7 +22,7 @@ class GroupAdmin(admin.ModelAdmin):
         'title',
         'description'
     )
-    emty_value_display = '-пусто-'
+    empty_value_display = '-пусто-'
 
 
 admin.site.register(Post, PostAdmin)
