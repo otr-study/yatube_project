@@ -5,24 +5,12 @@
 {% endblock title %}
 
 {% block content %}
-  <!-- класс py-5 создает отступы сверху и снизу блока -->
   <div class="container py-5">
-    <h1>{{ text }}</h1>
-    <p>{{ group }}</p>
+    <h1>Здесь будет информация о группах проекта Yatube</h1>
+    <p>{{ group.title|default:"---------" }}</p>
     {% for post in posts %}
-      <article>
-        <ul>
-          <li>
-            Автор: {{ post.author.get_full_name }}
-          </li>
-          <li>
-            Дата публикации: {{ post.pub_date|date:"d E Y" }}
-          </li>
-        </ul>
-        <p>{{ post.text }}</p>
-      </article>
+      {% include "includes/article.html" with truncate=False %}
       {% if not forloop.last %}<hr>{% endif %}
     {% endfor %}    
-    <!-- под последним постом нет линии -->
   </div>  
 {% endblock content %}
