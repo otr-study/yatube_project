@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import Post, Group
+from yatube.settings import EMPTY_VALUE
 
-EMPTY_VALUE = '-пусто-'
+from .models import Group, Post
 
 
 class PostAdmin(admin.ModelAdmin):

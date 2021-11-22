@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
 {% block title %}
-  Здесь будет информация о группах проекта Yatube
+  Информация о группах проекта Yatube
 {% endblock title %}
 
 {% block content %}
   <div class="container py-5">
-    <h1>Здесь будет информация о группах проекта Yatube</h1>
+    <h1>Информация о группах проекта Yatube</h1>
     <p>{{ group.title|default:"---------" }}</p>
     {% for post in posts %}
       {% include "includes/article.html" with truncate=False %}

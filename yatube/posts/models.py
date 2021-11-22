@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 
 SLUG_HELP_TEXT = (
     'Может содержать символы английского алфавита цифры и символы: "_", "-".'
