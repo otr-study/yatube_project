@@ -5,12 +5,13 @@
 {% endblock title %}
 
 {% block content %}
-  <div class="container py-5">
-    <h1>{{ group.description|default:"---------" }}</h1>
-    <p>{{ group.title|default:"---------" }}</p>
-    {% for post in posts %}
-      {% include "includes/article.html" with truncate=False %}
-      {% if not forloop.last %}<hr>{% endif %}
-    {% endfor %}    
-  </div>  
+<div class="container py-5">
+  <h1>{{ group.description|default:"---------" }}</h1>
+  <p>{{ group.title|default:"---------" }}</p>
+  {% for post in page_obj %}
+    {% include "includes/article.html" with truncate=False %}
+    {% if not forloop.last %}<hr>{% endif %}
+  {% endfor %}
+  {% include 'posts/includes/paginator.html' %}    
+</div>  
 {% endblock content %}

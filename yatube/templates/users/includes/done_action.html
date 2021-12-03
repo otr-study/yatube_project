@@ -1,0 +1,35 @@
+<div class="container py-5"> 
+  <div class="row justify-content-center">
+    <div class="col-md-8 p-5">
+      <div class="card">
+        <div class="card-header">
+        {% if source == "change_done" %}
+          Пароль изменён
+        {% elif source == "reset_complete" %}
+          Восстановление пароля завершено
+        {% elif source == "reset_done" %}
+          Отправлено письмо
+        {% elif source == "wrong_link" %}
+          Ошибка
+        {% endif %}
+        </div>
+        <div class="card-body">
+          <p>
+            {% if source == "change_done" %}
+              Пароль изменён успешно
+            {% elif source == "reset_complete" %}
+              Ваш пароль был сохранен. Используйте его для входа
+              <br>
+              <a href="{% url 'users:login' %}">войти</a>
+            {% elif source == "reset_done" %}
+              Проверьте свою почту, вам должно прийти письмо 
+              со ссылкой для восстановления пароля
+            {% elif source == "wrong_link" %}
+              Ссылка сброса пароля содержит ошибку или устарела.
+            {% endif %}
+          </p>
+        </div> 
+      </div> 
+    </div>
+  </div> 
+</div>
