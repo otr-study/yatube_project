@@ -1,15 +1,17 @@
 {% extends "base.html" %}
 
 {% block title %}
-  Это главная страница проекта Yatube
+  Профайл пользователя: {{ author.get_full_name }}
 {% endblock title %}
 
 {% block content %}
-<div class="container py-5">     
-  <h1>Это главная страница проекта Yatube</h1>
+<div class="container py-5">        
+  <h1>Все посты пользователя {{ author.get_full_name }} </h1>
+  <h3>Всего постов: {{ page_obj.paginator.count }} </h3> 
   {% for post in page_obj %}
-    {% include "includes/article.html" with truncate=True all_user_posts=True %}
-    {% if post.group is None %}
+
+  {% include "includes/article.html" %}       
+  {% if post.group is None %}
       {% url "posts:posts_without_group" as the_url %}
     {% else %}
       {% url "posts:group_list" slug=post.group.slug  as the_url %}
@@ -17,9 +19,9 @@
     <a 
       href="{{ the_url }}">
       все записи группы
-    </a>
+    </a>       
     {% if not forloop.last %}<hr>{% endif %}
   {% endfor %}
-  {% include 'posts/includes/paginator.html' %}
+  {% include 'posts/includes/paginator.html' %}  
 </div>
 {% endblock content %}

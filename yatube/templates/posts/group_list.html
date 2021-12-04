@@ -9,7 +9,7 @@
   <h1>{{ group.description|default:"---------" }}</h1>
   <p>{{ group.title|default:"---------" }}</p>
   {% for post in page_obj %}
-    {% include "includes/article.html" with truncate=False %}
+    {% include "includes/article.html" with all_user_posts=True %}
     {% if not forloop.last %}<hr>{% endif %}
   {% endfor %}
   {% include 'posts/includes/paginator.html' %}    
