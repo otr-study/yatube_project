@@ -1,7 +1,12 @@
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
 
+from .forms import PostForm
 from .models import Group, Post, User
+
+TEMPLATE_POST_CREATE = 'posts/create_post.html'
 
 
 def index(request):
@@ -62,3 +67,57 @@ def post_detail(request, post_id):
         'post': post
     }
     return render(request, 'posts/post_detail.html', context)
+
+
+@login_required
+def post_create(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            new_post = form.save(commit=False)
+            new_post.author = request.user
+            new_post.save()
+            return redirect(
+                reverse_lazy(
+                    'posts:profile',
+                    args=(request.user.username,)
+                )
+            )
+        return render(
+            request,
+            template_name=TEMPLATE_POST_CREATE,
+            context={'form': form}
+        )
+
+    form = PostForm()
+    return render(
+        request,
+        template_name=TEMPLATE_POST_CREATE,
+        context={'form': form}
+    )
+
+
+@login_required
+def post_edit(request, post_id):
+    edit_post = get_object_or_404(Post, pk=post_id)
+    if request.method == 'POST':
+        form = PostForm(instance=edit_post, data=request.POST)
+        if form.is_valid:
+            form.save()
+            return redirect(
+                reverse_lazy(
+                    'posts:profile',
+                    args=(request.user.username,)
+                )
+            )
+        return render(
+            request,
+            template_name=TEMPLATE_POST_CREATE,
+            context={'form': form, 'is_edit': True}
+        )
+    form = PostForm(instance=edit_post)
+    return render(
+        request,
+        template_name=TEMPLATE_POST_CREATE,
+        context={'form': form, 'is_edit': True}
+    )
