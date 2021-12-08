@@ -5,23 +5,26 @@
 {% endblock title %}
 
 {% block content %}
-<div class="container py-5">        
-  <h1>Все посты пользователя {{ author.get_full_name }} </h1>
-  <h3>Всего постов: {{ page_obj.paginator.count }} </h3> 
-  {% for post in page_obj %}
-
-  {% include "includes/article.html" %}       
-  {% if post.group is None %}
-      {% url "posts:posts_without_group" as the_url %}
-    {% else %}
-      {% url "posts:group_list" slug=post.group.slug  as the_url %}
-    {% endif %}
-    <a 
-      href="{{ the_url }}">
-      все записи группы
-    </a>       
-    {% if not forloop.last %}<hr>{% endif %}
-  {% endfor %}
-  {% include 'posts/includes/paginator.html' %}  
-</div>
+  <div class="container py-5">        
+    <h1>Все записи пользователя {{ author.get_full_name }} </h1>
+    <h3>Всего записей: {{ page_obj.paginator.count }} </h3> 
+    {% for post in page_obj %}
+      {% include "includes/article.html" %}       
+      {% if post.group %}
+        {% url "posts:group_list" slug=post.group.slug  as the_url %}
+      {% else %}
+        {% url "posts:posts_without_group" as the_url %}
+      {% endif %}
+      <a 
+        href="{{ the_url }}">
+        {% if post.group %}
+          Все записи группы {{ post.group.title }}
+        {% else %}
+          Все записи с незаполненной группой
+        {% endif %}
+      </a>       
+      {% if not forloop.last %}<hr>{% endif %}
+    {% endfor %}
+    {% include "posts/includes/paginator.html" %}  
+  </div>
 {% endblock content %}

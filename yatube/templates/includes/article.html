@@ -4,7 +4,7 @@
       Автор: {{ post.author.get_full_name }}
       {% if all_user_posts %}
         <a href="{% url 'posts:profile' username=post.author.username %}">
-          все посты пользователя
+          Все записи пользователя
         </a>
       {% endif %}
     </li>
@@ -18,6 +18,6 @@
     <p>{{ post.text|linebreaksbr }}</p>
   {% endif %}
   <a href="{% url 'posts:post_detail' post_id=post.pk %}">
-    подробная информация 
+    Подробная информация 
   </a>
 </article>

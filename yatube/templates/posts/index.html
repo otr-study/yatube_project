@@ -5,21 +5,25 @@
 {% endblock title %}
 
 {% block content %}
-<div class="container py-5">     
-  <h1>Это главная страница проекта Yatube</h1>
-  {% for post in page_obj %}
-    {% include "includes/article.html" with truncate=True all_user_posts=True %}
-    {% if post.group is None %}
-      {% url "posts:posts_without_group" as the_url %}
-    {% else %}
-      {% url "posts:group_list" slug=post.group.slug  as the_url %}
-    {% endif %}
-    <a 
-      href="{{ the_url }}">
-      все записи группы
-    </a>
-    {% if not forloop.last %}<hr>{% endif %}
-  {% endfor %}
-  {% include 'posts/includes/paginator.html' %}
-</div>
+  <div class="container py-5">     
+    <h1>Это главная страница проекта Yatube</h1>
+    {% for post in page_obj %}
+      {% include "includes/article.html" with truncate=True all_user_posts=True %}
+      {% if post.group %}
+        {% url "posts:group_list" slug=post.group.slug  as the_url %}
+      {% else %}
+        {% url "posts:posts_without_group" as the_url %}
+      {% endif %}
+      <a 
+        href="{{ the_url }}">
+        {% if post.group %}
+          Все записи группы  {{ post.group.title}}
+        {% else %}
+          Все записи с незаполненной группой
+        {% endif %}
+      </a>
+      {% if not forloop.last %}<hr>{% endif %}
+    {% endfor %}
+    {% include "posts/includes/paginator.html" %}
+  </div>
 {% endblock content %}
