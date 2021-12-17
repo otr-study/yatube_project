@@ -9,7 +9,10 @@ User = get_user_model()
 
 
 class Post(models.Model):
-    text = models.TextField('Содержимое поста')
+    text = models.TextField(
+        'Содержимое поста',
+        help_text='Введите текст записи'
+    )
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
     author = models.ForeignKey(
         User,
@@ -23,14 +26,15 @@ class Post(models.Model):
         blank=True,
         null=True,
         related_name='posts',
-        verbose_name='Группа'
+        verbose_name='Группа',
+        help_text='Выберите группу'
     )
 
     class Meta:
         ordering = ('-pub_date',)
 
     def __str__(self):
-        return self.text
+        return self.text[:15]
 
 
 class Group(models.Model):

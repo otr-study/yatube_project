@@ -7,6 +7,7 @@ from .models import Group, Post, User
 from .utils import get_paginator_page
 
 TEMPLATE_POST_CREATE = 'posts/create_post.html'
+TEMPLATE_GROUP_LIST = 'posts/group_list.html'
 
 
 def index(request):
@@ -21,7 +22,6 @@ def index(request):
 
 
 def group_posts(request, slug):
-    template = 'posts/group_list.html'
     group = get_object_or_404(Group, slug=slug)
     posts = group.posts.all()
     page_number = request.GET.get('page')
@@ -30,11 +30,10 @@ def group_posts(request, slug):
         'group': group,
         'page_obj': page_obj,
     }
-    return render(request, template, context)
+    return render(request, TEMPLATE_GROUP_LIST, context)
 
 
 def posts_without_group(request):
-    template = 'posts/group_list.html'
     posts = Post.objects.filter(group=None)
     page_number = request.GET.get('page')
     page_obj = get_paginator_page(posts, page_number)
@@ -42,7 +41,7 @@ def posts_without_group(request):
         'group': None,
         'page_obj': page_obj,
     }
-    return render(request, template, context)
+    return render(request, TEMPLATE_GROUP_LIST, context)
 
 
 def profile(request, username):
@@ -68,17 +67,16 @@ def post_detail(request, post_id):
 @login_required
 def post_create(request):
     form = PostForm(data=request.POST or None)
-    if request.method == 'POST':
-        if form.is_valid():
-            new_post = form.save(commit=False)
-            new_post.author = request.user
-            new_post.save()
-            return redirect(
-                reverse_lazy(
-                    'posts:profile',
-                    args=(request.user.username,)
-                )
+    if form.is_valid():
+        new_post = form.save(commit=False)
+        new_post.author = request.user
+        new_post.save()
+        return redirect(
+            reverse_lazy(
+                'posts:profile',
+                args=(request.user.username,)
             )
+        )
     return render(
         request,
         template_name=TEMPLATE_POST_CREATE,
@@ -97,15 +95,14 @@ def post_edit(request, post_id):
             )
         )
     form = PostForm(instance=edit_post, data=request.POST or None)
-    if request.method == 'POST':
-        if form.is_valid:
-            form.save()
-            return redirect(
-                reverse_lazy(
-                    'posts:post_detail',
-                    args=(edit_post.id,)
-                )
+    if form.is_valid():
+        form.save()
+        return redirect(
+            reverse_lazy(
+                'posts:post_detail',
+                args=(edit_post.id,)
             )
+        )
     return render(
         request,
         template_name=TEMPLATE_POST_CREATE,
