@@ -15,8 +15,10 @@ class PostTestCase(TestCase):
 
     @classmethod
     def create_post(cls, **kwargs):
+        group = None
+        if not kwargs.get('empty_group'):
+            group = kwargs.get('group') or cls.group
         user = kwargs.get('user') or cls.user
-        group = kwargs.get('group') or cls.group
         postfix = kwargs.get('postfix') or ''
         return Post.objects.create(
             author=user,
