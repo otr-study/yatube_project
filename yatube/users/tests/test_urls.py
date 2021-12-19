@@ -20,7 +20,7 @@ USR_EMAIL = 'tst@tst.com'
 )
 class UsersURLTests(TestCase):
     @classmethod
-    def setUpClass(cls) -> None:
+    def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create_user(
             username=USER_NAME,
@@ -33,7 +33,7 @@ class UsersURLTests(TestCase):
         self.client.force_login(UsersURLTests.user)
 
     def test_urls_exists_at_desired_location(self):
-        """Доступность страниц любому пользователю."""
+        """Доступность страниц авторизованному пользователю."""
         urls_locations = {
             '/auth/login/': HTTPStatus.OK,
             '/auth/signup/': HTTPStatus.OK,
@@ -42,6 +42,7 @@ class UsersURLTests(TestCase):
             '/auth/password_reset/': HTTPStatus.OK,
             '/auth/password_reset/done/': HTTPStatus.OK,
             '/auth/reset/done/': HTTPStatus.OK,
+            '/auth/reset/123/123/': HTTPStatus.OK,
             '/auth/logout/': HTTPStatus.OK,
         }
         for url, expect_status in urls_locations.items():
@@ -59,6 +60,7 @@ class UsersURLTests(TestCase):
             '/auth/password_reset/': 'users/password_reset_form.html',
             '/auth/password_reset/done/': 'users/password_reset_done.html',
             '/auth/reset/done/': 'users/password_reset_complete.html',
+            '/auth/reset/123/123/': 'users/password_reset_confirm.html',
             '/auth/logout/': 'users/logged_out.html',
         }
         for url, template in urls_templates.items():
@@ -97,18 +99,9 @@ class UsersURLTests(TestCase):
         msg = mail.outbox[0]
         uidb64, token = self.utils_extract_reset_tokens(msg.body)
         url = f'/auth/reset/{uidb64}/{token}/'
-        print(url)
 
     def utils_extract_reset_tokens(self, full_url):
         return re.findall(
             r'/([\w\-]+)',
             re.search(r'^http\://.+$', full_url, flags=re.MULTILINE)[0]
         )[3:5]
-
-
-def debug():
-    return
-    UsersURLTests.setUpClass()
-    tst = UsersURLTests()
-    tst.setUp()
-    tst.test_reset_password()

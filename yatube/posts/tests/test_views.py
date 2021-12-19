@@ -1,5 +1,6 @@
 # posts/tests/views_urls.py
 from core.test_utils import Post, PostTestCase
+from django import forms
 from django.core.paginator import Page
 from django.test import Client
 from django.urls import reverse
@@ -136,6 +137,39 @@ class PostViewTests(PostTestCase):
         for url, params in job_preset.items():
             self.check_list_url(url, *params)
 
+    def test_post_detail_context(self):
+        """Контекст страницы post_detail"""
+        response = self.client.get(
+            reverse('posts:post_detail', args=(PostViewTests.post.id,))
+        )
+        self.check_post_context(response.context.get('post'))
+
+    def test_create_post_context(self):
+        """Контекст формы добавления поста"""
+        response = self.client.get(reverse('posts:post_create'))
+        self.check_post_form_context(response.context.get('form'))
+
+    def test_edit_post_context(self):
+        """Контекст формы едактирования поста"""
+        response = self.client.get(
+            reverse('posts:post_edit', args=(PostViewTests.post.id,))
+        )
+        self.check_post_form_context(response.context.get('form'))
+
+    def check_post_form_context(self, form):
+        form_fields = {
+            'text': forms.fields.CharField,
+            'group': forms.models.ModelChoiceField
+        }
+        for value, expected in form_fields.items():
+            with self.subTest(value=value):
+                form_field = form.fields.get(value)
+                self.assertIsInstance(form_field, expected)
+
+    def check_post_context(self, post):
+        self.assertIsInstance(post, Post)
+        self.assertIn('Текст большого-пребольшого тестового поста', post.text)
+
     def check_list_url(self, url, count, func):
         page = 1
         all_posts = []
@@ -146,9 +180,8 @@ class PostViewTests(PostTestCase):
             page_obj = response.context.get('page_obj')
             self.assertIsInstance(page_obj, Page)
             self.assertEqual(len(page_obj), cur_len)
-            self.assertIsInstance(page_obj[0], Post)
             all_posts = all_posts + list(page_obj)
             count -= PostViewTests.POSTS_PER_PAGE
             page += 1
         self.assertTrue(func(all_posts))
-        
+        self.check_post_context(all_posts[0])
