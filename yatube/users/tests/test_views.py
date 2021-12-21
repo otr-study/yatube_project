@@ -50,7 +50,9 @@ class UsersURLTests(TestCase):
             reverse(
                 'users:password_change_done'
             ): 'users/password_change_done.html',
-            reverse('users:password_change'): 'users/password_change_form.html',
+            reverse(
+                'users:password_change'
+            ): 'users/password_change_form.html',
             reverse('users:password_reset'): 'users/password_reset_form.html',
             reverse(
                 'users:password_reset_done'

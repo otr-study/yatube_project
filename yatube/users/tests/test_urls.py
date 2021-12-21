@@ -11,6 +11,7 @@ User = get_user_model()
 
 USR_PASSWD = '123'
 NEW_USR_PASSWD = '321sdfa3('
+NEW_USR_PASSWD2 = '241sxd3-fa4'
 USER_NAME = 'auth'
 USR_EMAIL = 'tst@tst.com'
 
@@ -98,7 +99,27 @@ class UsersURLTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         msg = mail.outbox[0]
         uidb64, token = self.utils_extract_reset_tokens(msg.body)
-        url = f'/auth/reset/{uidb64}/{token}/'
+        response = self.client.get(
+            f'/auth/reset/{uidb64}/{token}/',
+            follow=True
+        )
+        url = f'/auth/reset/{uidb64}/set-password/'
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertRedirects(response, url)
+
+        response = self.client.post(
+            url,
+            data={
+                'new_password1': NEW_USR_PASSWD2,
+                'new_password2': NEW_USR_PASSWD2
+            },
+            follow=True
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertTemplateUsed(response, 'users/password_reset_complete.html')
+        self.assertIsNotNone(
+            authenticate(username=USER_NAME, password=NEW_USR_PASSWD2)
+        )
 
     def utils_extract_reset_tokens(self, full_url):
         return re.findall(

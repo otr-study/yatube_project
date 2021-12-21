@@ -1,4 +1,4 @@
-# posts/tests/views_urls.py
+# posts/tests/test_views.py
 from core.test_utils import Post, PostTestCase
 from django import forms
 from django.core.paginator import Page
