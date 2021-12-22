@@ -1,21 +1,21 @@
-# posts/tests/test_forms.py
-from core.test_utils import PostTestCase
 from django.test import Client
 from django.urls import reverse
-from posts.views import Post
+
+from ..views import Post
+from .test_utils import PostTestCase
 
 
 class PostFormTests(PostTestCase):
     def setUp(self):
-        self.client = Client()
-        self.client.force_login(PostFormTests.user)
+        self.client.force_login(self.user)
+        self.non_authorized_client = Client()
 
     def test_create_valid_post(self):
         """Валидная форма создает запись в Post."""
         posts_count = Post.objects.count()
         form_data = {
             'text': 'Запись добавленная при тестировании формы',
-            'group': PostFormTests.group.id,
+            'group': self.group.id,
         }
         response = self.client.post(
             reverse('posts:post_create'),
@@ -24,13 +24,13 @@ class PostFormTests(PostTestCase):
         )
         self.assertRedirects(
             response,
-            reverse('posts:profile', args=(PostFormTests.user.username,))
+            reverse('posts:profile', args=(self.user.username,))
         )
         self.assertEqual(Post.objects.count(), posts_count + 1)
         self.assertTrue(
             Post.objects.filter(
-                text='Запись добавленная при тестировании формы',
-                group=PostFormTests.group
+                text=form_data['text'],
+                group=form_data['group']
             ).exists()
         )
 
@@ -39,7 +39,7 @@ class PostFormTests(PostTestCase):
         posts_count = Post.objects.count()
         form_data = {
             'text': '',
-            'group': PostFormTests.group.id,
+            'group': self.group.id,
         }
         response = self.client.post(
             reverse('posts:post_create'),
@@ -59,20 +59,50 @@ class PostFormTests(PostTestCase):
         """Форма редактирует запись в Post."""
         form_data = {
             'text': 'Запись измененная при тестировании формы',
-            'group': PostFormTests.group.id,
+            'group': self.group.id,
         }
         response = self.client.post(
-            reverse('posts:post_edit', args=(PostFormTests.post.id,)),
+            reverse('posts:post_edit', args=(self.post.id,)),
             data=form_data,
             follow=True
         )
         self.assertRedirects(
             response,
-            reverse('posts:post_detail', args=(PostFormTests.post.id,))
+            reverse('posts:post_detail', args=(self.post.id,))
         )
-        self.assertTrue(
-            Post.objects.filter(
-                text='Запись измененная при тестировании формы',
-                group=PostFormTests.group
-            ).exists()
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.text, form_data['text'])
+        self.assertEqual(self.post.group.id, form_data['group'])
+
+    def test_anonymous_create_post(self):
+        """Анонимный пользователь не может создать пост."""
+        form_data = {
+            'text': 'Анонимный пользователь создал этот пост',
+            'group': self.group.id,
+        }
+        response = self.non_authorized_client.post(
+            reverse('posts:post_create'),
+            data=form_data,
+            follow=True
+        )
+        self.assertRedirects(
+            response,
+            reverse('users:login') + '?next=/create/'
+        )
+
+    def test_anonymous_edit_post(self):
+        """Анонимный пользователь не может редактировать пост."""
+        form_data = {
+            'text': 'Анонимный пользователь отредактировал этот пост',
+            'group': self.group.id,
+        }
+        response = self.non_authorized_client.post(
+            reverse('posts:post_edit', args=(self.post.id,)),
+            data=form_data,
+            follow=True
+        )
+        url_edit = f'/posts/{self.post.id}/edit/'
+        self.assertRedirects(
+            response,
+            reverse('users:login') + f'?next={url_edit}'
         )

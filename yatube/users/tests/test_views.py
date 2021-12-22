@@ -1,9 +1,8 @@
-# users/tests/test_urls.py
 from http import HTTPStatus
 
 from django import forms
 from django.contrib.auth import get_user_model
-from django.test import Client, TestCase
+from django.test import TestCase
 from django.urls import reverse
 
 User = get_user_model()
@@ -18,8 +17,7 @@ class UsersURLTests(TestCase):
         )
 
     def setUp(self):
-        self.client = Client()
-        self.client.force_login(UsersURLTests.user)
+        self.client.force_login(self.user)
 
     def test_pages_accessible_by_name(self):
         """URLs, генерируемые по имени, доступны."""

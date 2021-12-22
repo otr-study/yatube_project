@@ -1,10 +1,9 @@
-# users/tests/test_urls.py
 import re
 from http import HTTPStatus
 
 from django.contrib.auth import authenticate, get_user_model
 from django.core import mail
-from django.test import Client, TestCase
+from django.test import TestCase
 from django.test.utils import override_settings
 
 User = get_user_model()
@@ -30,8 +29,7 @@ class UsersURLTests(TestCase):
         )
 
     def setUp(self):
-        self.client = Client()
-        self.client.force_login(UsersURLTests.user)
+        self.client.force_login(self.user)
 
     def test_urls_exists_at_desired_location(self):
         """Доступность страниц авторизованному пользователю."""
@@ -88,7 +86,7 @@ class UsersURLTests(TestCase):
 
     def test_reset_password(self):
         """Проверка сброса пароля."""
-        if UsersURLTests.user.is_authenticated:
+        if self.user.is_authenticated:
             self.client.logout()
         response = self.client.post(
             '/auth/password_reset/',

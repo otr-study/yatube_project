@@ -1,56 +1,28 @@
-# posts/tests/test_views.py
-from core.test_utils import Post, PostTestCase
-from django import forms
 from django.core.paginator import Page
-from django.test import Client
+from django.test import TestCase
 from django.urls import reverse
+from yatube.settings import POSTS_PER_PAGE
+
+from ..forms import PostForm
+from ..models import Group, Post, User
+from .test_utils import PostTestCase
 
 
 class PostViewTests(PostTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.POSTS_PER_PAGE = 10
-        cls.POSTS_ANOTHER_GRUOP = 3
-        cls.POSTS_ANOTHER_USER = 3
-        cls.POSTS_WITHOUT_GRUOP = 11
-        for i in range(cls.POSTS_PER_PAGE):
-            cls.create_post(postfix=str(i))
-
         cls.another_group = cls.create_group(
             title='Другая тестовая группа',
             slug='another_tst_slug'
         )
-        for i in range(cls.POSTS_ANOTHER_GRUOP):
-            cls.create_post(
-                postfix=str(i + cls.POSTS_PER_PAGE),
-                group=cls.another_group
-            )
-
-        for i in range(cls.POSTS_WITHOUT_GRUOP):
-            cls.create_post(
-                postfix=str(i + cls.POSTS_PER_PAGE + cls.POSTS_ANOTHER_GRUOP),
-                empty_group=True
-            )
-
         cls.another_user = cls.create_user(username='another_user')
-        for i in range(cls.POSTS_ANOTHER_USER):
-            cls.create_post(
-                postfix=str(i + cls.POSTS_PER_PAGE
-                            + cls.POSTS_ANOTHER_GRUOP
-                            + cls.POSTS_WITHOUT_GRUOP
-                            ),
-                user=cls.another_user
-            )
-        cls.total_posts_count = Post.objects.count()
-        cls.count_posts_group = (cls.total_posts_count
-                                 - cls.POSTS_ANOTHER_GRUOP
-                                 - cls.POSTS_WITHOUT_GRUOP)
-        cls.count_posts_user = cls.total_posts_count - cls.POSTS_ANOTHER_USER
+        cls.post_another_user = cls.create_post(user=cls.another_user)
+        cls.post_another_group = cls.create_post(gropu=cls.another_group)
+        cls.post_without_group = cls.create_post(empty_group=True)
 
     def setUp(self):
-        self.client = Client()
-        self.client.force_login(PostViewTests.user)
+        self.client.force_login(self.user)
 
     def test_pages_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
@@ -59,20 +31,20 @@ class PostViewTests(PostTestCase):
             reverse('posts:posts_without_group'): 'posts/group_list.html',
             reverse(
                 'posts:group_list',
-                args=(PostViewTests.group.slug,)
+                args=(self.group.slug,)
             ): 'posts/group_list.html',
             reverse(
                 'posts:profile',
-                args=(PostViewTests.user.username,)
+                args=(self.user.username,)
             ): 'posts/profile.html',
             reverse('posts:post_create'): 'posts/create_post.html',
             reverse(
                 'posts:post_edit',
-                args=(PostViewTests.post.id,)
+                args=(self.post.id,)
             ): 'posts/create_post.html',
             reverse(
                 'posts:post_detail',
-                args=(PostViewTests.post.id,)
+                args=(self.post.id,)
             ): 'posts/post_detail.html',
         }
         for reverse_name, template in pages_templates.items():
@@ -80,108 +52,104 @@ class PostViewTests(PostTestCase):
                 response = self.client.get(reverse_name)
                 self.assertTemplateUsed(response, template)
 
-    def test_index_context_paginator(self):
-        """Контекст главной страницы и пагинатор."""
-        count = PostViewTests.total_posts_count
-        self.check_list_url(
-            reverse('posts:index'),
-            count,
-            lambda x: PostViewTests.post in x
-        )
-
-    def test_profile_context_paginator(self):
-        """Контекст страницы профайла и пагинатор."""
-        job_preset = {
-            reverse(
-                'posts:profile',
-                args=(PostViewTests.user.username,)
-            ): (
-                PostViewTests.count_posts_user,
-                lambda x: PostViewTests.post in x
-            ),
-            reverse(
-                'posts:profile',
-                args=(PostViewTests.another_user.username,)
-            ): (
-                PostViewTests.POSTS_ANOTHER_USER,
-                lambda x: PostViewTests.post not in x
-            )
-        }
-        for url, params in job_preset.items():
-            self.check_list_url(url, *params)
-
-    def test_group_list_context_paginator(self):
-        """Контекст страницы группы и пагинатор."""
-        job_preset = {
-            reverse(
-                'posts:group_list',
-                args=(PostViewTests.group.slug,)
-            ): (
-                PostViewTests.count_posts_group,
-                lambda x: PostViewTests.post in x
-            ),
-            reverse(
-                'posts:group_list',
-                args=(PostViewTests.another_group.slug,)
-            ): (
-                PostViewTests.POSTS_ANOTHER_GRUOP,
-                lambda x: PostViewTests.post not in x
-            ),
-            reverse(
-                'posts:posts_without_group'
-            ): (
-                PostViewTests.POSTS_WITHOUT_GRUOP,
-                lambda x: PostViewTests.post not in x
-            )
-        }
-        for url, params in job_preset.items():
-            self.check_list_url(url, *params)
+    def test_context_list_page(self):
+        """Контекст списков"""
+        urls_posts = [
+            (reverse('posts:index'), self.post),
+            (reverse('posts:group_list', args=(self.group.slug,)), self.post),
+            (reverse('posts:profile', args=(self.user.username,)), self.post),
+            (reverse('posts:posts_without_group'), self.post_without_group),
+        ]
+        for url, post_standart in urls_posts:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                page_obj = response.context.get('page_obj')
+                self.assertIsInstance(page_obj, Page)
+                post = page_obj[len(page_obj) - 1]
+                self.check_post_context(post, post_standart)
 
     def test_post_detail_context(self):
         """Контекст страницы post_detail"""
         response = self.client.get(
-            reverse('posts:post_detail', args=(PostViewTests.post.id,))
+            reverse('posts:post_detail', args=(self.post.id,))
         )
-        self.check_post_context(response.context.get('post'))
+        self.check_post_context(response.context.get('post'), self.post)
 
     def test_create_post_context(self):
         """Контекст формы добавления поста"""
         response = self.client.get(reverse('posts:post_create'))
-        self.check_post_form_context(response.context.get('form'))
+        self.assertIsInstance(response.context.get('form'), PostForm)
+        self.assertIsNone(response.context.get('is_edit'))
 
     def test_edit_post_context(self):
         """Контекст формы едактирования поста"""
         response = self.client.get(
-            reverse('posts:post_edit', args=(PostViewTests.post.id,))
+            reverse('posts:post_edit', args=(self.post.id,))
         )
-        self.check_post_form_context(response.context.get('form'))
+        self.assertIsInstance(response.context.get('form'), PostForm)
+        self.assertTrue(response.context.get('is_edit'))
 
-    def check_post_form_context(self, form):
-        form_fields = {
-            'text': forms.fields.CharField,
-            'group': forms.models.ModelChoiceField
-        }
-        for value, expected in form_fields.items():
-            with self.subTest(value=value):
-                form_field = form.fields.get(value)
-                self.assertIsInstance(form_field, expected)
-
-    def check_post_context(self, post):
+    def check_post_context(self, post, post_standard):
         self.assertIsInstance(post, Post)
-        self.assertIn('Текст большого-пребольшого тестового поста', post.text)
+        self.assertEqual(post.text, post_standard.text)
+        self.assertEqual(post.group, post_standard.group)
+        self.assertEqual(post.author, post_standard.author)
 
-    def check_list_url(self, url, count, func):
-        page = 1
-        all_posts = []
-        while count > 0:
-            cur_page = '' if page == 1 else f'?page={page}'
-            cur_len = min(count, PostViewTests.POSTS_PER_PAGE)
-            response = self.client.get(url + cur_page)
-            page_obj = response.context.get('page_obj')
-            self.assertIsInstance(page_obj, Page)
-            self.assertEqual(len(page_obj), cur_len)
-            all_posts = all_posts + list(page_obj)
-            count -= PostViewTests.POSTS_PER_PAGE
-            page += 1
-        self.assertTrue(func(all_posts))
-        self.check_post_context(all_posts[0])
+
+class PostPaginatorTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = User.objects.create(username='auth')
+        cls.group = Group.objects.create(
+            title='test group',
+            slug='slug',
+            description='description',
+        )
+        cls.SECOND_PAGE_COUNT = 3
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_paginator_group_urls(self):
+        posts = [
+            Post(
+                text=f'test post {i}',
+                author=self.user,
+                group=self.group,
+            ) for i in range(POSTS_PER_PAGE + self.SECOND_PAGE_COUNT)
+        ]
+        Post.objects.bulk_create(posts)
+        urls = [
+            reverse('posts:index'),
+            reverse('posts:group_list', args=(self.group.slug,)),
+            reverse('posts:profile', args=(self.user.username,))
+        ]
+        self.check_paginator(urls)
+
+    def test_paginator_without_group_urls(self):
+        posts = [
+            Post(
+                text=f'test post {i}',
+                author=self.user,
+            ) for i in range(POSTS_PER_PAGE + self.SECOND_PAGE_COUNT)
+        ]
+        Post.objects.bulk_create(posts)
+        urls = [
+            reverse('posts:posts_without_group'),
+        ]
+        self.check_paginator(urls)
+
+    def check_paginator(self, urls):
+        pages = [
+            (1, POSTS_PER_PAGE),
+            (2, self.SECOND_PAGE_COUNT),
+        ]
+        for url in urls:
+            for page, count in pages:
+                with self.subTest(url=url):
+                    response = self.client.get(url, {'page': page})
+                    self.assertEqual(
+                        len(response.context.get('page_obj')),
+                        count
+                    )

@@ -1,15 +1,11 @@
-# users/tests/test_forms.py
 from django.contrib.auth import get_user_model
-from django.test import Client, TestCase
+from django.test import TestCase
 from django.urls import reverse
 
 User = get_user_model()
 
 
 class UsersFormsTests(TestCase):
-    def setUp(self):
-        self.client = Client()
-
     def test_create_user(self):
         """Форма создает нового пользователя."""
         users_count = User.objects.count()
