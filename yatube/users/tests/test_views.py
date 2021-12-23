@@ -41,7 +41,7 @@ class UsersURLTests(TestCase):
                 self.assertEqual(response.status_code, expect_status)
 
     def test_about_page_uses_correct_template(self):
-        """Проверка статитечских шаблоно по имени"""
+        """Проверка статитечских шаблоно по имени."""
         urls_templates = {
             reverse('users:login'): 'users/login.html',
             reverse('users:signup'): 'users/signup.html',
@@ -70,7 +70,7 @@ class UsersURLTests(TestCase):
                 self.assertTemplateUsed(response, template)
 
     def test_create_post_context(self):
-        """Контекст формы регистрации пользователя"""
+        """Контекст формы регистрации пользователя."""
         response = self.client.get(reverse('users:signup'))
         form_fields = {
             'first_name': forms.fields.CharField,

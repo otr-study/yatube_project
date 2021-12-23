@@ -5,11 +5,13 @@ from .test_utils import Group, PostTestCase
 
 class PostModelTest(PostTestCase):
     def test_models_have_correct_object_names(self):
+        """Имя поста соответствует ожидаемому."""
         post = self.post
         expected_object_name = post.text[:15]
         self.assertEqual(expected_object_name, str(post))
 
     def test_verbose_name(self):
+        """Подробное имя поста соответствует ожидаемому."""
         post = self.post
         field_verboses = {
             'text': 'Содержимое поста',
@@ -23,6 +25,7 @@ class PostModelTest(PostTestCase):
                     post._meta.get_field(value).verbose_name, expected)
 
     def test_help_text(self):
+        """Подсказка поста соответствует ожидаемой."""
         post = self.post
         field_help_texts = {
             'text': 'Введите текст записи',
@@ -45,10 +48,12 @@ class GroupModelTest(TestCase):
         )
 
     def test_models_have_correct_object_names(self):
+        """Имя группы соответствует ожидаемому."""
         expected_object_name = self.group.title
         self.assertEqual(expected_object_name, str(self.group))
 
     def test_verbose_name(self):
+        """Подробное имя группы соответствует ожидаемому."""
         field_verboses = {
             'title': 'Заголовок',
             'slug': 'Идентификатор',
@@ -60,6 +65,7 @@ class GroupModelTest(TestCase):
                     self.group._meta.get_field(value).verbose_name, expected)
 
     def test_help_text(self):
+        """Подсказка группы соответствует ожидаемой."""
         expected = (
             'Может содержать символы английского алфавита '
             'цифры и символы: "_", "-".'

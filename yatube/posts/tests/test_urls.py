@@ -64,7 +64,7 @@ class PostURLTests(PostTestCase):
                 self.assertTemplateUsed(response, template)
 
     def test_urls_redirect_anonymous(self):
-        """Проверка редиректов анонимуса"""
+        """Проверка редиректов анонимуса."""
         url_edit = f'/posts/{self.post.id}/edit/'
         urls_redirect_urls = {
             '/create/': '/auth/login/?next=/create/',
@@ -77,7 +77,7 @@ class PostURLTests(PostTestCase):
                     response, (redirect_url))
 
     def test_url_edit_redirect_not_author(self):
-        """Проверка редиректа редактирования поста"""
+        """Проверка редиректа редактирования поста."""
         self.client.force_login(self.user_not_author)
         url = f'/posts/{self.post.id}/edit/'
         response = self.client.get(url, follow=True)

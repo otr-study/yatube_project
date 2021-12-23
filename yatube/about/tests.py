@@ -6,7 +6,7 @@ from django.urls import reverse
 
 class AboutStaticTests(TestCase):
     def test_urls_exists_at_desired_location(self):
-        """Проверка существования static urls"""
+        """Проверка существования static urls."""
         urls_locations = {
             '/about/author/': HTTPStatus.OK,
             '/about/tech/': HTTPStatus.OK,
@@ -17,7 +17,7 @@ class AboutStaticTests(TestCase):
                 self.assertEqual(response.status_code, expect_status)
 
     def test_urls_uses_correct_templates(self):
-        """Проверка использования static templates"""
+        """Проверка использования static templates."""
         urls_templates = {
             '/about/author/': 'about/author.html',
             '/about/tech/': 'about/tech.html'
@@ -39,7 +39,7 @@ class AboutStaticTests(TestCase):
                 self.assertEqual(response.status_code, expect_status)
 
     def test_about_page_uses_correct_template(self):
-        """Проверка статитечских шаблоно по имени"""
+        """Проверка статитечских шаблоно по имени."""
         urls_templates = {
             reverse('about:author'): 'about/author.html',
             reverse('about:tech'): 'about/tech.html'
