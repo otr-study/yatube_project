@@ -1,7 +1,9 @@
+from django.conf import settings
 from django.contrib import admin
-from yatube.settings import EMPTY_VALUE
 
 from .models import Group, Post
+
+EMPTY_VALUE = getattr(settings, 'EMPTY_VALUE', '-')
 
 
 class PostAdmin(admin.ModelAdmin):

@@ -13,9 +13,11 @@ class PostFormTests(PostTestCase):
     def test_create_valid_post(self):
         """Валидная форма создает запись в Post."""
         posts_count = Post.objects.count()
+        img_name = 'tst_create.gif'
         form_data = {
             'text': 'Запись добавленная при тестировании формы',
             'group': self.group.id,
+            'image': self.create_img(filename=img_name),
         }
         response = self.client.post(
             reverse('posts:post_create'),
@@ -30,7 +32,8 @@ class PostFormTests(PostTestCase):
         self.assertTrue(
             Post.objects.filter(
                 text=form_data['text'],
-                group=form_data['group']
+                group=form_data['group'],
+                image=f'posts/{img_name}',
             ).exists()
         )
 

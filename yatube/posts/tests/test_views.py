@@ -1,15 +1,13 @@
+from django.conf import settings
 from django.core.paginator import Page
 from django.test import TestCase
 from django.urls import reverse
 
-"""Екатерина, если я правильно понимаю нижеследующий импорт должен быть
-отделен от предыдущего пустой строкой, но isort не дает этого сделать, он
-автоматически сдвигает этот импорт вплотную к предыдущему."""
-from yatube.settings import POSTS_PER_PAGE
-
 from ..forms import PostForm
 from ..models import Group, Post, User
 from .test_utils import PostTestCase
+
+POSTS_PER_PAGE = getattr(settings, 'POSTS_PER_PAGE', 10)
 
 
 class PostViewTests(PostTestCase):
@@ -21,9 +19,19 @@ class PostViewTests(PostTestCase):
             slug='another_tst_slug'
         )
         cls.another_user = cls.create_user(username='another_user')
-        cls.post_another_user = cls.create_post(user=cls.another_user)
-        cls.post_another_group = cls.create_post(group=cls.another_group)
-        cls.post_without_group = cls.create_post(empty_group=True)
+        image = cls.create_img(filename='tst_view_context.gif')
+        cls.post_another_user = cls.create_post(
+            user=cls.another_user,
+            image=image
+        )
+        cls.post_another_group = cls.create_post(
+            group=cls.another_group,
+            image=image
+        )
+        cls.post_without_group = cls.create_post(
+            empty_group=True,
+            image=image
+        )
 
     def setUp(self):
         self.client.force_login(self.user)
@@ -148,7 +156,7 @@ class PostViewTests(PostTestCase):
                 ),
                 (
                     lambda x: self.post_without_group in x,
-                    'Пост без группы не выводится на страницу профайл.'
+                    'Пост без группы выводится на страницу профайл.'
                 )
             ],
             reverse('posts:posts_without_group'): [
@@ -183,6 +191,7 @@ class PostViewTests(PostTestCase):
         self.assertEqual(post.text, post_standard.text)
         self.assertEqual(post.group, post_standard.group)
         self.assertEqual(post.author, post_standard.author)
+        self.assertEqual(post.image, post_standard.image)
 
 
 class PostPaginatorTest(TestCase):
@@ -195,7 +204,7 @@ class PostPaginatorTest(TestCase):
             slug='slug',
             description='description',
         )
-        cls.SECOND_PAGE_COUNT = 3
+        cls.SECOND_PAGE_COUNT = max(1, POSTS_PER_PAGE // 2)
 
     def setUp(self):
         self.client.force_login(self.user)

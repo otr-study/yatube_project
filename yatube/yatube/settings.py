@@ -5,6 +5,8 @@ SECRET_KEY = 'v#ao+(64%tn4df*v9*&*mkfdu+05y098uz6*olj2mg66)f5mph'
 DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver']
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -16,7 +18,8 @@ INSTALLED_APPS = [
     'posts.apps.PostsConfig',
     'users.apps.UsersConfig',
     'core.apps.CoreConfig',
-    'about.apps.AboutConfig'
+    'about.apps.AboutConfig',
+    'sorl.thumbnail',
 ]
 
 MIDDLEWARE = [
@@ -91,6 +94,7 @@ POSTS_PER_PAGE = 10
 
 LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = 'posts:index'
+CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
