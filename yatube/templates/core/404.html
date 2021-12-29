@@ -4,8 +4,12 @@
 {% block content %}
   <div class="container py-5">
     <h1>Поздравляем! Вы нашли секретную страницу 404!</h1>
-    <img 
+    <div class="d-flex justify-content-center">
+      <img
+        width="500"
+        heigth="500"
         src="{% static 'img/HTjD4.gif' %}">
+    </div>
     <p>Страницы с адресом {{ path }} не существует</p>
     <a href="{% url 'posts:index' %}"> Идите на главную</a>
   </div>

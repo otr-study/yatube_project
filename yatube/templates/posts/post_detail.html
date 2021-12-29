@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load thumbnail %}
+{% load user_filters %}
 
 {% block title %}
   Запись: {{ post.text|truncatechars:30 }}
@@ -50,6 +51,25 @@
             Редактировать
           </a>
         {% endif %}
+        {% if user.is_authenticated %}
+          <div class="card my-4">
+            <h5 class="card-header">Добавить комментарий:</h5>
+            <div class="card-body">
+              <form 
+                method="post" 
+                action="{% url 'posts:add_comment' post_id=post.id %}">
+                {% csrf_token %}
+                {% for field in form %}
+                  <div class="form-group mb-2">
+                    {{ field|addclass:"form-control" }}
+                  </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary">Отправить</button>
+              </form>
+            </div>
+          </div>
+        {% endif %}
+        {% include "posts/includes/comments.html" %}
       </article>
     </div>
   </div> 

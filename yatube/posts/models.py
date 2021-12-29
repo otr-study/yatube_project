@@ -1,9 +1,11 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 
 SLUG_HELP_TEXT = (
     'Может содержать символы английского алфавита цифры и символы: "_", "-".'
 )
+PATH_POSTS_IMAGE = getattr(settings, 'PATH_POSTS_IMAGE', 'posts/')
 
 User = get_user_model()
 
@@ -31,7 +33,7 @@ class Post(models.Model):
     )
     image = models.ImageField(
         'Картинка',
-        upload_to='posts/',
+        upload_to=PATH_POSTS_IMAGE,
         blank=True
     )
 
@@ -53,3 +55,28 @@ class Group(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Запись'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Автор'
+    )
+    text = models.TextField(
+        'Комментарий'
+    )
+    created = models.DateTimeField('Дата добавления', auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created',)
+
+    def __str__(self):
+        return self.text[:15]

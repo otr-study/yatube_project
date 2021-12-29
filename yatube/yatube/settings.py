@@ -6,7 +6,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver']
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+PATH_POSTS_IMAGE = 'posts/' 
 
 INSTALLED_APPS = [
     'django.contrib.admin',

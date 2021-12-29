@@ -1,8 +1,11 @@
+from django.conf import settings
 from django.test import Client
 from django.urls import reverse
 
 from ..views import Post
 from .test_utils import PostTestCase
+
+PATH_POSTS_IMAGE = getattr(settings, 'PATH_POSTS_IMAGE', 'posts/')
 
 
 class PostFormTests(PostTestCase):
@@ -33,8 +36,9 @@ class PostFormTests(PostTestCase):
             Post.objects.filter(
                 text=form_data['text'],
                 group=form_data['group'],
-                image=f'posts/{img_name}',
-            ).exists()
+                image=f'{PATH_POSTS_IMAGE}{img_name}',
+            ).exists(),
+            'Ошибка проверки полей нового поста.'
         )
 
     def test_create_invalid_post(self):
@@ -60,9 +64,11 @@ class PostFormTests(PostTestCase):
 
     def test_edit_post(self):
         """Форма редактирует запись в Post."""
+        img_name = 'tst_edit.gif'
         form_data = {
             'text': 'Запись измененная при тестировании формы',
             'group': self.group.id,
+            'image': self.create_img(filename=img_name),
         }
         response = self.client.post(
             reverse('posts:post_edit', args=(self.post.id,)),
@@ -76,6 +82,11 @@ class PostFormTests(PostTestCase):
         self.post.refresh_from_db()
         self.assertEqual(self.post.text, form_data['text'])
         self.assertEqual(self.post.group.id, form_data['group'])
+        self.assertEqual(
+            self.post.image,
+            f'{PATH_POSTS_IMAGE}{img_name}',
+            'Ошибка проверки изменения изображения.'
+        )
 
     def test_anonymous_create_post(self):
         """Анонимный пользователь не может создать пост."""
