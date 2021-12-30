@@ -3,7 +3,7 @@ from django.core.paginator import Page
 from django.test import TestCase
 from django.urls import reverse
 
-from ..forms import PostForm
+from ..forms import CommentForm, PostForm
 from ..models import Group, Post, User
 from .test_utils import PostTestCase
 
@@ -82,10 +82,14 @@ class PostViewTests(PostTestCase):
 
     def test_post_detail_context(self):
         """Контекст страницы post_detail."""
+        comment = self.create_comment()
         response = self.client.get(
             reverse('posts:post_detail', args=(self.post.id,))
         )
-        self.check_post_context(response.context.get('post'), self.post)
+        received_post = response.context.get('post')
+        self.check_post_context(received_post, self.post)
+        self.assertIsInstance(response.context.get('form'), CommentForm)
+        self.assertIn(comment, received_post.comments.all())
 
     def test_create_post_context(self):
         """Контекст формы добавления поста."""

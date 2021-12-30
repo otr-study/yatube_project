@@ -74,3 +74,28 @@ class GroupModelTest(TestCase):
             self.group._meta.get_field('slug').help_text,
             expected
         )
+
+
+class CommentModelTest(PostTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.comment = cls.create_comment()
+
+    def test_models_have_correct_object_names(self):
+        """Имя коммента соответствует ожидаемому."""
+        expected_object_name = self.comment.text[:15]
+        self.assertEqual(expected_object_name, str(self.comment))
+
+    def test_verbose_name(self):
+        """Подробные имена полей соответствуют ожидаемым."""
+        field_verboses = {
+            'post': 'Запись',
+            'author': 'Автор',
+            'text': 'Комментарий',
+            'created': 'Дата добавления',
+        }
+        for value, expected in field_verboses.items():
+            with self.subTest(value=value):
+                self.assertEqual(
+                    self.comment._meta.get_field(value).verbose_name, expected)

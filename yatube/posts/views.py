@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.views.decorators.cache import cache_page
 
 from .forms import CommentForm, PostForm
 from .models import Group, Post, User
@@ -10,6 +11,7 @@ TEMPLATE_POST_CREATE = 'posts/create_post.html'
 TEMPLATE_GROUP_LIST = 'posts/group_list.html'
 
 
+@cache_page(20, key_prefix='index_page')
 def index(request):
     template = 'posts/index.html'
     posts = Post.objects.all()

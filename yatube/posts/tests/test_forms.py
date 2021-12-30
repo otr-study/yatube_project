@@ -120,3 +120,50 @@ class PostFormTests(PostTestCase):
             response,
             reverse('users:login') + f'?next={url_edit}'
         )
+
+
+class CommentFormTest(PostTestCase):
+    def setUp(self):
+        self.client.force_login(self.user)
+        self.non_authorized_client = Client()
+
+    def test_create_comment(self):
+        """Валидная форма создает запись в Comment."""
+        comments_count = self.post.comments.count()
+        form_data = {
+            'text': 'Запись добавленная при тестировании формы',
+        }
+        response = self.client.post(
+            reverse('posts:add_comment', args=(self.post.id,)),
+            data=form_data,
+            follow=True
+        )
+        self.assertRedirects(
+            response,
+            reverse('posts:post_detail', args=(self.post.id,))
+        )
+        self.assertEqual(self.post.comments.count(), comments_count + 1)
+        self.assertTrue(
+            self.post.comments.filter(
+                text=form_data['text'],
+            ).exists(),
+            'Ошибка проверки полей нового коммента.'
+        )
+
+    def test_anonymous_create_comment(self):
+        """Анонимный пользователь не может создать коммент."""
+        comments_count = self.post.comments.count()
+        form_data = {
+            'text': 'Запись добавленная при тестировании формы',
+        }
+        url = reverse('posts:add_comment', args=(self.post.id,))
+        response = self.non_authorized_client.post(
+            url,
+            data=form_data,
+            follow=True
+        )
+        self.assertEqual(self.post.comments.count(), comments_count)
+        self.assertRedirects(
+            response,
+            reverse('users:login') + f'?next={url}'
+        )

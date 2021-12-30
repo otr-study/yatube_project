@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 
-from ..models import Group, Post
+from ..models import Comment, Group, Post
 
 User = get_user_model()
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
@@ -73,4 +73,15 @@ class PostTestCase(TestCase):
             name=filename,
             content=small_gif,
             content_type='image/gif'
+        )
+
+    @classmethod
+    def create_comment(cls, **kwargs):
+        post = kwargs.get('post') or cls.post
+        user = kwargs.get('user') or cls.user
+        postfix = kwargs.get('postfix') or ''
+        return Comment.objects.create(
+            post=post,
+            author=user,
+            text=f'Текст большого-пребольшого тестового комментария {postfix}'
         )
