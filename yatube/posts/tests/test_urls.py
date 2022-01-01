@@ -1,5 +1,7 @@
 from http import HTTPStatus
 
+from django.core.cache import cache
+
 from .test_utils import PostTestCase, User
 
 
@@ -8,6 +10,9 @@ class PostURLTests(PostTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user_not_author = User.objects.create_user(username='not_author')
+
+    def setUp(self):
+        cache.clear()
 
     def test_urls_exists_at_desired_location(self):
         """Доступность страниц любому пользователю."""

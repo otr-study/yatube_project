@@ -4,14 +4,14 @@ from django.urls import reverse_lazy
 from django.views.decorators.cache import cache_page
 
 from .forms import CommentForm, PostForm
-from .models import Group, Post, User
+from .models import Follow, Group, Post, User
 from .utils import get_paginator_page
 
 TEMPLATE_POST_CREATE = 'posts/create_post.html'
 TEMPLATE_GROUP_LIST = 'posts/group_list.html'
 
 
-@cache_page(20, key_prefix='index_page')
+@cache_page(20)
 def index(request):
     template = 'posts/index.html'
     posts = Post.objects.all()
@@ -48,12 +48,14 @@ def posts_without_group(request):
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
+    following = author.following.filter(user_id=request.user.id).exists()
     posts = author.posts.all()
     page_number = request.GET.get('page')
     page_obj = get_paginator_page(posts, page_number)
     context = {
         'author': author,
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'following': following,
     }
     return render(request, 'posts/profile.html', context)
 
@@ -130,3 +132,45 @@ def add_comment(request, post_id):
         comment.post = post
         comment.save()
     return redirect('posts:post_detail', post_id=post_id)
+
+
+@login_required
+def follow_index(request):
+    authors = [follower.author for follower in request.user.follower.all()]
+    posts = Post.objects.filter(author__in=authors)
+    page_number = request.GET.get('page')
+    page_obj = get_paginator_page(posts, page_number)
+    context = {
+        'page_obj': page_obj,
+    }
+    return render(request, 'posts/follow.html', context)
+
+
+@login_required
+def profile_follow(request, username):
+    author = get_object_or_404(User, username=username)
+    if not author.following.filter(user_id=request.user.id).exists():
+        Follow.objects.create(user=request.user, author=author)
+    return redirect(
+        reverse_lazy(
+            'posts:profile',
+            args=(author.username,)
+        )
+    )
+
+
+@login_required
+def profile_unfollow(request, username):
+    author = get_object_or_404(User, username=username)
+    follow = get_object_or_404(
+        Follow,
+        user=request.user,
+        author=author,
+    )
+    follow.delete()
+    return redirect(
+        reverse_lazy(
+            'posts:profile',
+            args=(username,)
+        )
+    )

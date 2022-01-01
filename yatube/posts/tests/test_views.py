@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.cache import cache
 from django.core.paginator import Page
 from django.test import TestCase
 from django.urls import reverse
@@ -35,6 +36,7 @@ class PostViewTests(PostTestCase):
 
     def setUp(self):
         self.client.force_login(self.user)
+        cache.clear()
 
     def test_pages_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
@@ -186,6 +188,7 @@ class PostViewTests(PostTestCase):
         }
         for url, checks in preset.items():
             for func, description in checks:
+                cache.clear()
                 with self.subTest(url=url, description=description):
                     response = self.client.get(url)
                     self.assertTrue(func(response.context.get('page_obj')))
@@ -260,3 +263,13 @@ class PostPaginatorTest(TestCase):
                         len(response.context.get('page_obj')),
                         count
                     )
+
+
+class CacheViewTests(PostTestCase):
+    """Страница index возвращается из кеша."""
+    def test_cache_main_page(self):
+        url = reverse('posts:index')
+        resp = self.client.get(url)
+        self.delete_post(self.post.id)
+        response = self.client.get(url)
+        pass

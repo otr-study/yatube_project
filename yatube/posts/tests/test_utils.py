@@ -4,6 +4,7 @@ import tempfile
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.shortcuts import get_object_or_404
 from django.test import TestCase, override_settings
 
 from ..models import Comment, Group, Post
@@ -85,3 +86,8 @@ class PostTestCase(TestCase):
             author=user,
             text=f'Текст большого-пребольшого тестового комментария {postfix}'
         )
+
+    @classmethod
+    def delete_post(cls, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        post.delete()
