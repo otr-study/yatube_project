@@ -1,13 +1,15 @@
 import shutil
 import tempfile
+from functools import wraps
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 from django.test import TestCase, override_settings
 
-from ..models import Comment, Group, Post
+from ..models import Comment, Follow, Group, Post
 
 User = get_user_model()
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
@@ -88,6 +90,24 @@ class PostTestCase(TestCase):
         )
 
     @classmethod
+    def create_follow(cls, user, **kwargs):
+        author = kwargs.get('author') or cls.user
+        return Follow.objects.create(user=user, author=author)
+
+    @classmethod
+    def delete_follow(cls, follow_id):
+        follow = get_object_or_404(Follow, id=follow_id)
+        follow.delete()
+
+    @classmethod
     def delete_post(cls, post_id):
         post = get_object_or_404(Post, id=post_id)
         post.delete()
+
+
+def clear_cache(func):
+    @wraps(func)
+    def wraper(*args, **kwargs):
+        cache.clear()
+        return func(*args, **kwargs)
+    return wraper

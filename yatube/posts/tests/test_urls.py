@@ -1,8 +1,6 @@
 from http import HTTPStatus
 
-from django.core.cache import cache
-
-from .test_utils import PostTestCase, User
+from .test_utils import PostTestCase, User, clear_cache
 
 
 class PostURLTests(PostTestCase):
@@ -11,9 +9,7 @@ class PostURLTests(PostTestCase):
         super().setUpClass()
         cls.user_not_author = User.objects.create_user(username='not_author')
 
-    def setUp(self):
-        cache.clear()
-
+    @clear_cache
     def test_urls_exists_at_desired_location(self):
         """Доступность страниц любому пользователю."""
         urls_locations = {
@@ -51,6 +47,7 @@ class PostURLTests(PostTestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
 
+    @clear_cache
     def test_urls_uses_correct_templates(self):
         """Проверка связанности путей с шаблонами."""
         self.client.force_login(self.user)
@@ -62,6 +59,7 @@ class PostURLTests(PostTestCase):
             '/create/': 'posts/create_post.html',
             f'/posts/{self.post.id}/edit/': 'posts/create_post.html',
             f'/posts/{self.post.id}/': 'posts/post_detail.html',
+            '/non_existent': 'core/404.html',
         }
         for url, template in urls_templates.items():
             with self.subTest(url=url):

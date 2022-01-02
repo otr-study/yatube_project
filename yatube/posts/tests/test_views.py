@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from ..forms import CommentForm, PostForm
 from ..models import Group, Post, User
-from .test_utils import PostTestCase
+from .test_utils import PostTestCase, clear_cache
 
 POSTS_PER_PAGE = getattr(settings, 'POSTS_PER_PAGE', 10)
 
@@ -36,8 +36,8 @@ class PostViewTests(PostTestCase):
 
     def setUp(self):
         self.client.force_login(self.user)
-        cache.clear()
 
+    @clear_cache
     def test_pages_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
         pages_templates = {
@@ -66,6 +66,7 @@ class PostViewTests(PostTestCase):
                 response = self.client.get(reverse_name)
                 self.assertTemplateUsed(response, template)
 
+    @clear_cache
     def test_context_list_page(self):
         """Контекст списков."""
         urls_posts = [
@@ -107,6 +108,7 @@ class PostViewTests(PostTestCase):
         self.assertIsInstance(response.context.get('form'), PostForm)
         self.assertTrue(response.context.get('is_edit'))
 
+    @clear_cache
     def test_correct_entry_post_in_list(self):
         """Пост попадает в отведенный для него список."""
         preset = {
@@ -187,10 +189,9 @@ class PostViewTests(PostTestCase):
             ],
         }
         for url, checks in preset.items():
+            response = self.client.get(url)
             for func, description in checks:
-                cache.clear()
                 with self.subTest(url=url, description=description):
-                    response = self.client.get(url)
                     self.assertTrue(func(response.context.get('page_obj')))
 
     def check_post_context(self, post, post_standard):
@@ -266,10 +267,34 @@ class PostPaginatorTest(TestCase):
 
 
 class CacheViewTests(PostTestCase):
-    """Страница index возвращается из кеша."""
     def test_cache_main_page(self):
+        """Страница index возвращается из кеша."""
         url = reverse('posts:index')
-        resp = self.client.get(url)
-        self.delete_post(self.post.id)
+        post_text = self.post.text.strip()
+        self.client.get(url)
+        self.post.delete()
         response = self.client.get(url)
-        pass
+        self.assertIn(post_text, response.content.decode('utf-8'))
+        cache.clear()
+        response = self.client.get(url)
+        self.assertNotIn(post_text, response.content.decode('utf-8'))
+
+
+class FollowViewTests(PostTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.follower = cls.create_user(username='follower')
+        cls.follow = cls.create_follow(user=cls.follower)
+        cls.another_author = cls.create_user(username='another_author')
+        cls.another_post = cls.create_post(
+            user=cls.another_author,
+            text='Пост автора без подписки',
+        )
+
+    def setUp(self):
+        self.client.force_login(self.follower)
+
+    def test_post_appears_feed_follower(self):
+        """Пост корректно попадает в ленту подписчика."""
+        response = self.client.get(reverse('posts:follow_index'))
