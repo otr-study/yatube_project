@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from django.conf import settings
 from django.core.cache import cache
 from django.core.paginator import Page
@@ -5,7 +7,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from ..forms import CommentForm, PostForm
-from ..models import Group, Post, User
+from ..models import Follow, Group, Post, User
 from .test_utils import PostTestCase, clear_cache
 
 POSTS_PER_PAGE = getattr(settings, 'POSTS_PER_PAGE', 10)
@@ -285,7 +287,6 @@ class FollowViewTests(PostTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.follower = cls.create_user(username='follower')
-        cls.follow = cls.create_follow(user=cls.follower)
         cls.another_author = cls.create_user(username='another_author')
         cls.another_post = cls.create_post(
             user=cls.another_author,
@@ -297,4 +298,35 @@ class FollowViewTests(PostTestCase):
 
     def test_post_appears_feed_follower(self):
         """Пост корректно попадает в ленту подписчика."""
+        self.create_follow(user=self.follower)
         response = self.client.get(reverse('posts:follow_index'))
+        page_obj = response.context.get('page_obj')
+        self.assertIn(self.post, page_obj)
+        self.assertNotIn(self.another_post, page_obj)
+
+    def test_create_delete_follower(self):
+        """Проверка добавления/удаления подписок"""
+        self.client.get(
+            reverse(
+                'posts:profile_follow',
+                args=(self.another_author.username,)
+            )
+        )
+        self.assertTrue(
+            Follow.objects.filter(
+                author=self.another_author,
+                user=self.follower,
+            ).exists()
+        )
+        self.client.get(
+            reverse(
+                'posts:profile_unfollow',
+                args=(self.another_author.username,)
+            )
+        )
+        self.assertFalse(
+            Follow.objects.filter(
+                author=self.another_author,
+                user=self.follower,
+            ).exists()
+        )
