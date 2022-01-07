@@ -3,7 +3,7 @@ from http import HTTPStatus
 from django.conf import settings
 from django.core.cache import cache
 from django.core.paginator import Page
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.urls import reverse
 
 from ..forms import CommentForm, PostForm
@@ -276,10 +276,10 @@ class CacheViewTests(PostTestCase):
         self.client.get(url)
         self.post.delete()
         response = self.client.get(url)
-        self.assertIn(post_text, response.content.decode('utf-8'))
+        self.assertContains(response, post_text)
         cache.clear()
         response = self.client.get(url)
-        self.assertNotIn(post_text, response.content.decode('utf-8'))
+        self.assertNotContains(response, post_text)
 
 
 class FollowViewTests(PostTestCase):
@@ -295,6 +295,12 @@ class FollowViewTests(PostTestCase):
 
     def setUp(self):
         self.client.force_login(self.follower)
+
+    def test_urls_followings_available_anonymus(self):
+        """Доступность страницы подписок анонимусу."""
+        client = Client()
+        response = client.get(reverse('posts:follow_index'))
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
 
     def test_post_appears_feed_follower(self):
         """Пост корректно попадает в ленту подписчика."""

@@ -5,27 +5,39 @@ from . import views
 app_name = 'posts'
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.Index.as_view(), name='index'),
     path(
         'group/empty_group/',
-        views.posts_without_group,
+        views.Group_posts.as_view(),
         name='posts_without_group'
     ),
-    path('group/<slug:slug>/', views.group_posts, name='group_list'),
-    path('profile/<str:username>/', views.profile, name='profile'),
-    path('create/', views.post_create, name='post_create'),
-    path('posts/<int:post_id>/edit/', views.post_edit, name='post_edit'),
-    path('posts/<int:post_id>/comment', views.add_comment, name='add_comment'),
-    path('posts/<int:post_id>/', views.post_detail, name='post_detail'),
-    path('follow/', views.follow_index, name='follow_index'),
+    path('group/<slug:slug>/', views.Group_posts.as_view(), name='group_list'),
+    path('profile/<str:username>/', views.Profile.as_view(), name='profile'),
+    path('create/', views.Post_create.as_view(), name='post_create'),
+    path(
+        'posts/<int:post_id>/edit/',
+        views.Post_edit.as_view(),
+        name='post_edit'
+    ),
+    path(
+        'posts/<int:post_id>/comment',
+        views.Add_comment.as_view(),
+        name='add_comment'
+    ),
+    path(
+        'posts/<int:post_id>/',
+        views.Post_detail.as_view(),
+        name='post_detail'
+    ),
+    path('follow/', views.Follow_index.as_view(), name='follow_index'),
     path(
         'profile/<str:username>/follow/',
-        views.profile_follow,
+        views.Profile_follow.as_view(),
         name='profile_follow'
     ),
     path(
         'profile/<str:username>/unfollow/',
-        views.profile_unfollow,
+        views.Profile_unfollow.as_view(),
         name='profile_unfollow'
     ),
 ]

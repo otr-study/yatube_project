@@ -107,7 +107,7 @@ class PostTestCase(TestCase):
 
 def clear_cache(func):
     @wraps(func)
-    def wraper(*args, **kwargs):
+    def wrapper(*args, **kwargs):
         cache.clear()
         return func(*args, **kwargs)
-    return wraper
+    return wrapper
