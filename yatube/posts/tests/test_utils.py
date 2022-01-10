@@ -92,12 +92,23 @@ class PostTestCase(TestCase):
     @classmethod
     def create_follow(cls, user, **kwargs):
         author = kwargs.get('author') or cls.user
+        follows = Follow.objects.filter(
+            user=user,
+            author=author,
+        )
+        if follows.exists():
+            return follows[0]
         return Follow.objects.create(user=user, author=author)
 
     @classmethod
-    def delete_follow(cls, follow_id):
-        follow = get_object_or_404(Follow, id=follow_id)
-        follow.delete()
+    def delete_follow(cls, user, **kwargs):
+        author = kwargs.get('author') or cls.user
+        follows = Follow.objects.filter(
+            user=user,
+            author=author,
+        )
+        if follows.exists():
+            follows[0].delete()
 
     @classmethod
     def delete_post(cls, post_id):

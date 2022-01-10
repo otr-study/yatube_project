@@ -8,7 +8,8 @@ from .models import Post
 POSTS_PER_PAGE = getattr(settings, 'POSTS_PER_PAGE', 10)
 
 
-def get_paginator_page(items, page_number):
+def get_paginator_page(items, request):
+    page_number = request.GET.get('page')
     paginator = Paginator(items, POSTS_PER_PAGE)
     return paginator.get_page(page_number)
 

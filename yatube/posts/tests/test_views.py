@@ -310,8 +310,9 @@ class FollowViewTests(PostTestCase):
         self.assertIn(self.post, page_obj)
         self.assertNotIn(self.another_post, page_obj)
 
-    def test_create_delete_follower(self):
-        """Проверка добавления/удаления подписок"""
+    def test_create_follower(self):
+        """Проверка добавления подписок"""
+        self.delete_follow(self.user, author=self.another_author)
         self.client.get(
             reverse(
                 'posts:profile_follow',
@@ -324,6 +325,10 @@ class FollowViewTests(PostTestCase):
                 user=self.follower,
             ).exists()
         )
+
+    def test_delete_follower(self):
+        """Проверка удаления подписок"""
+        self.create_follow(user=self.user, author=self.another_author)
         self.client.get(
             reverse(
                 'posts:profile_unfollow',

@@ -17,21 +17,19 @@ class Index(View):
     def get(self, request):
         template = 'posts/index.html'
         posts = Post.objects.all()
-        page_number = request.GET.get('page')
-        page_obj = get_paginator_page(posts, page_number)
+        page_obj = get_paginator_page(posts, request)
         context = {
             'page_obj': page_obj,
         }
         return render(request, template, context)
 
 
-class Group_posts(View):
+class GroupPosts(View):
     def get(self, request, slug=None):
         template = 'posts/group_list.html'
         group = slug and get_object_or_404(Group, slug=slug)
         posts = Post.objects.filter(group=group)
-        page_number = request.GET.get('page')
-        page_obj = get_paginator_page(posts, page_number)
+        page_obj = get_paginator_page(posts, request)
         context = {
             'group': group,
             'page_obj': page_obj,
@@ -44,8 +42,7 @@ class Profile(View):
         author = get_object_or_404(User, username=username)
         following = author.following.filter(user_id=request.user.id).exists()
         posts = author.posts.all()
-        page_number = request.GET.get('page')
-        page_obj = get_paginator_page(posts, page_number)
+        page_obj = get_paginator_page(posts, request)
         context = {
             'author': author,
             'page_obj': page_obj,
@@ -54,7 +51,7 @@ class Profile(View):
         return render(request, 'posts/profile.html', context)
 
 
-class Post_detail(View):
+class PostDetail(View):
     def get(self, request, post_id):
         post = get_object_or_404(Post, pk=post_id)
         form = CommentForm()
@@ -65,7 +62,7 @@ class Post_detail(View):
         return render(request, 'posts/post_detail.html', context)
 
 
-class Post_create(LoginRequiredMixin, View):
+class PostCreate(LoginRequiredMixin, View):
     def get(self, request):
         form = PostForm()
         return render(
@@ -96,7 +93,7 @@ class Post_create(LoginRequiredMixin, View):
         )
 
 
-class Post_edit(LoginRequiredMixin, PostAuthorEaualUserMixin, View):
+class PostEdit(LoginRequiredMixin, PostAuthorEaualUserMixin, View):
     def get(self, request, post_id):
         form = PostForm(instance=self.edit_post)
         return render(
@@ -125,7 +122,7 @@ class Post_edit(LoginRequiredMixin, PostAuthorEaualUserMixin, View):
         )
 
 
-class Add_comment(LoginRequiredMixin, View):
+class AddComment(LoginRequiredMixin, View):
     def post(self, request, post_id):
         post = get_object_or_404(Post, pk=post_id)
         form = CommentForm(request.POST or None)
@@ -137,18 +134,17 @@ class Add_comment(LoginRequiredMixin, View):
         return redirect('posts:post_detail', post_id=post_id)
 
 
-class Follow_index(LoginRequiredMixin, View):
+class FollowIndex(LoginRequiredMixin, View):
     def get(self, request):
         posts = Post.objects.filter(author__following__user=request.user)
-        page_number = request.GET.get('page')
-        page_obj = get_paginator_page(posts, page_number)
+        page_obj = get_paginator_page(posts, request)
         context = {
             'page_obj': page_obj,
         }
         return render(request, 'posts/follow.html', context)
 
 
-class Profile_follow(LoginRequiredMixin, View):
+class ProfileFollow(LoginRequiredMixin, View):
     def get(self, request, username):
         author = get_object_or_404(User, username=username)
         follow_exist = author.following.filter(
@@ -164,14 +160,14 @@ class Profile_follow(LoginRequiredMixin, View):
         )
 
 
-class Profile_unfollow(LoginRequiredMixin, View):
+class ProfileUnfollow(LoginRequiredMixin, View):
     def get(self, request, username):
-        follow = get_object_or_404(
-            Follow,
+        follows = Follow.objects.filter(
             user=request.user,
             author__username=username,
         )
-        follow.delete()
+        if follows.exists():
+            follows[0].delete()
         return redirect(
             reverse_lazy(
                 'posts:profile',
