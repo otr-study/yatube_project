@@ -16,7 +16,8 @@ class Index(View):
     @method_decorator(cache_page(20))
     def get(self, request):
         template = 'posts/index.html'
-        posts = Post.objects.all()
+        queryset = Post.objects.select_related('group')
+        posts = queryset.select_related('author').all()
         page_obj = get_paginator_page(posts, request)
         context = {
             'page_obj': page_obj,
@@ -28,7 +29,7 @@ class GroupPosts(View):
     def get(self, request, slug=None):
         template = 'posts/group_list.html'
         group = slug and get_object_or_404(Group, slug=slug)
-        posts = Post.objects.filter(group=group)
+        posts = Post.objects.select_related('author').filter(group=group)
         page_obj = get_paginator_page(posts, request)
         context = {
             'group': group,
@@ -41,7 +42,7 @@ class Profile(View):
     def get(self, request, username):
         author = get_object_or_404(User, username=username)
         following = author.following.filter(user_id=request.user.id).exists()
-        posts = author.posts.all()
+        posts = author.posts.select_related('group').all()
         page_obj = get_paginator_page(posts, request)
         context = {
             'author': author,
@@ -167,7 +168,7 @@ class ProfileUnfollow(LoginRequiredMixin, View):
             author__username=username,
         )
         if follows.exists():
-            follows[0].delete()
+            follows.delete()
         return redirect(
             reverse_lazy(
                 'posts:profile',

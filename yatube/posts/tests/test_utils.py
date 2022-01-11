@@ -108,7 +108,7 @@ class PostTestCase(TestCase):
             author=author,
         )
         if follows.exists():
-            follows[0].delete()
+            follows.delete()
 
     @classmethod
     def delete_post(cls, post_id):
