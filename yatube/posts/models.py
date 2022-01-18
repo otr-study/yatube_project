@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
+from django.urls import reverse_lazy
 
 SLUG_HELP_TEXT = (
     'Может содержать символы английского алфавита цифры и символы: "_", "-".'
@@ -45,6 +46,9 @@ class Post(models.Model):
 
     def __str__(self):
         return self.text[:15]
+
+    def get_absolute_url(self):
+        return reverse_lazy('posts:post_detail', kwargs={'post_id': self.id})
 
 
 class Group(models.Model):

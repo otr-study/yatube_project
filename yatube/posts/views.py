@@ -3,53 +3,54 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from django.views.generic import View
+from django.views.generic import ListView, View
 
 from .forms import CommentForm, PostForm
 from .models import Follow, Group, Post, User
-from .utils import PostAuthorEaualUserMixin, get_paginator_page
+from .utils import PostAuthorEqualUserMixin, PostListMixin
 
 TEMPLATE_POST_CREATE = 'posts/create_post.html'
 
 
-class Index(View):
+class Index(PostListMixin, ListView):
+    template_name = 'posts/index.html'
+    queryset = Post.objects.select_related(
+        'group'
+    ).select_related('author')
+
     @method_decorator(cache_page(20))
     def get(self, request):
-        template = 'posts/index.html'
-        queryset = Post.objects.select_related('group')
-        posts = queryset.select_related('author').all()
-        page_obj = get_paginator_page(posts, request)
-        context = {
-            'page_obj': page_obj,
-        }
-        return render(request, template, context)
+        return super().get(request)
 
 
-class GroupPosts(View):
-    def get(self, request, slug=None):
-        template = 'posts/group_list.html'
-        group = slug and get_object_or_404(Group, slug=slug)
-        posts = Post.objects.select_related('author').filter(group=group)
-        page_obj = get_paginator_page(posts, request)
-        context = {
-            'group': group,
-            'page_obj': page_obj,
-        }
-        return render(request, template, context)
+class GroupPosts(PostListMixin, ListView):
+    template_name = 'posts/group_list.html'
+
+    def get_queryset(self):
+        slug = self.kwargs.get('slug')
+        self.group = slug and get_object_or_404(Group, slug=slug)
+        return Post.objects.select_related('author').filter(group=self.group)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['group'] = self.group
+        return context
 
 
-class Profile(View):
-    def get(self, request, username):
-        author = get_object_or_404(User, username=username)
-        following = author.following.filter(user_id=request.user.id).exists()
-        posts = author.posts.select_related('group').all()
-        page_obj = get_paginator_page(posts, request)
-        context = {
-            'author': author,
-            'page_obj': page_obj,
-            'following': following,
-        }
-        return render(request, 'posts/profile.html', context)
+class Profile(PostListMixin, ListView):
+    template_name = 'posts/profile.html'
+
+    def get_queryset(self):
+        self.author = get_object_or_404(User, username=self.kwargs['username'])
+        return self.author.posts.select_related('group')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['author'] = self.author
+        context['following'] = self.author.following.filter(
+            user_id=self.request.user.id
+        ).exists()
+        return context
 
 
 class PostDetail(View):
@@ -94,7 +95,7 @@ class PostCreate(LoginRequiredMixin, View):
         )
 
 
-class PostEdit(LoginRequiredMixin, PostAuthorEaualUserMixin, View):
+class PostEdit(LoginRequiredMixin, PostAuthorEqualUserMixin, View):
     def get(self, request, post_id):
         form = PostForm(instance=self.edit_post)
         return render(
@@ -135,14 +136,13 @@ class AddComment(LoginRequiredMixin, View):
         return redirect('posts:post_detail', post_id=post_id)
 
 
-class FollowIndex(LoginRequiredMixin, View):
-    def get(self, request):
-        posts = Post.objects.filter(author__following__user=request.user)
-        page_obj = get_paginator_page(posts, request)
-        context = {
-            'page_obj': page_obj,
-        }
-        return render(request, 'posts/follow.html', context)
+class FollowIndex(LoginRequiredMixin, PostListMixin, ListView):
+    template_name = 'posts/follow.html'
+
+    def get_queryset(self):
+        return Post.objects.filter(
+            author__following__user=self.request.user
+        ).select_related('author').select_related('group')
 
 
 class ProfileFollow(LoginRequiredMixin, View):

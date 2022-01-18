@@ -8,13 +8,12 @@ from .models import Post
 POSTS_PER_PAGE = getattr(settings, 'POSTS_PER_PAGE', 10)
 
 
-def get_paginator_page(items, request):
-    page_number = request.GET.get('page')
-    paginator = Paginator(items, POSTS_PER_PAGE)
-    return paginator.get_page(page_number)
+class PostListMixin:
+    paginate_by = POSTS_PER_PAGE
+    model = Post
 
 
-class PostAuthorEaualUserMixin():
+class PostAuthorEqualUserMixin():
     def dispatch(self, request, post_id):
         self.edit_post = get_object_or_404(Post, pk=post_id)
         if self.edit_post.author != request.user:

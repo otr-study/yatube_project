@@ -17,6 +17,7 @@ class PostAdmin(admin.ModelAdmin):
     list_editable = ('group',)
     search_fields = ('text',)
     list_filter = ('pub_date',)
+    list_display_links = ('pk', 'text')
     empty_value_display = EMPTY_VALUE
 
 
@@ -26,6 +27,7 @@ class GroupAdmin(admin.ModelAdmin):
         'title',
         'description'
     )
+    list_display_links = ('pk', 'title')
     empty_value_display = EMPTY_VALUE
 
 
@@ -39,6 +41,7 @@ class CommentAdmin(admin.ModelAdmin):
     )
     search_fields = ('text',)
     list_filter = ('created',)
+    list_display_links = ('pk', 'post')
 
 
 class FollowAdmin(admin.ModelAdmin):
