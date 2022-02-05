@@ -1,0 +1,18 @@
+:root {
+    --color-primary-background: #282C34;
+    --color-secondary-background: #21252B;
+    --color-third-background: #1D1D1D;
+    --color-text: #f1f4f7;
+    --color-text-placeholder: #9fa3a6;
+    --color-text-strong: #a5a7a8;
+    --color-text-middle: #f1f4f7;
+    --color-border: rgba(210, 215, 217, 0.75);
+    --color-accent-background: rgba(230, 235, 237, 0.25);
+    --color-box-shadow: #c4c3c3;
+    --color-scrollbar: #666;
+    --color-scrollbar-back: #201c29;
+    --url-ya-logo: url(../../images/ya-logo-dark.svg);
+    --height-ya-logo: 35px;
+    --url-blob: url(../../images/blob-dark.png);
+    --color-bg-css-tricks-logo: inherit;
+  }

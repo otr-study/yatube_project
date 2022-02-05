@@ -13,6 +13,11 @@ app_name = 'users'
 
 urlpatterns = [
     path(
+        'user_profile/<str:username>/',
+        views.UserProfile.as_view(),
+        name='user_profile',
+    ),
+    path(
         'logout/',
         LogoutView.as_view(template_name='users/logged_out.html'),
         name='logout'

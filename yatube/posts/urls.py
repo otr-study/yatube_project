@@ -1,11 +1,12 @@
 from django.urls import path
+from django.views.decorators.cache import cache_page
 
 from . import views
 
 app_name = 'posts'
 
 urlpatterns = [
-    path('', views.Index.as_view(), name='index'),
+    path('', cache_page(20)(views.Index.as_view()), name='index'),
     path(
         'group/empty_group/',
         views.GroupPosts.as_view(),

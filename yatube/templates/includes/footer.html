@@ -1,3 +1,76 @@
-<footer class="border-top text-center py-3"> 
-  <p>© {{ year }} Copyright <span style="color:red">Ya</span>tube</p>          
-</footer>
+{% load static %}
+{% load posts_tags %}
+
+<div class="pre-footer"></div>
+{% popular_articles %}
+<div class="my-footer-decorated">
+  <div class="my-footer-decorated__decorated-line"></div>
+  <section class="my-footer">
+    <div class="my-footer__columns">
+      <div class="my-footer__column my-footer__column_content_copyright">
+        <div class="ya-logo"></div>
+        <div class="logo-copyright">
+          <div class="logo">
+            <strong>Я</strong><span class="logo_decorated">Писарь</span>
+          </div>
+          <p class="my-copyright">&copy; {{ year }}.</p>
+        </div>
+      </div>
+      <div class="my-footer__column my-footer__column_content_info">
+        <h2 class="my-footer__column-heading">О проекте</h2>
+        <nav class="my-footer__column-links">
+          <a 
+            class="my-footer__column-link"
+            href="{% url 'about:tech' %}">
+            Технологии
+          </a>
+          <a 
+            class="my-footer__column-link" 
+            href="{% url 'about:author' %}">
+            Об авторе
+          </a>
+          <a 
+            class="my-footer__column-link" 
+            href="{% url 'about:contact_us' %}">
+            Связаться
+          </a>
+        </nav>
+      </div>
+      <div class="my-footer__column my-footer__column_content_social">
+        <h2 class="my-footer__column-heading">Соцсети</h2>
+        <nav class="my-footer__column-links">
+          <a
+            class="my-footer__column-link"
+            href="https://facebook.com/"
+            target="_blank">
+            <img
+              class="my-footer__social-icon"
+              src="{% static 'images/facebook_color_white.svg' %}" 
+              alt="">
+            Facebook
+          </a>
+          <a
+            class="my-footer__column-link"
+            href="https://vk.com/"
+            target="_blank">
+            <img
+              class="my-footer__social-icon"
+              src="{% static 'images/vk_color_white.svg' %}"
+              alt="">
+            ВКонтакте
+          </a>
+          <a
+            class="my-footer__column-link"
+            href="https://instagram.com/"
+            target="_blank">
+            <img
+              class="my-footer__social-icon"
+              src="{% static 'images/instagram_color_white.svg' %}"
+              alt="">
+            Instagram
+          </a>
+        </nav>
+      </div>
+    </div>
+  </section>
+</div>

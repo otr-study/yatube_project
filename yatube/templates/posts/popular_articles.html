@@ -1,0 +1,14 @@
+<section class="popular-articles">
+  <div class="section-my-title section-my-title__position_footer">
+    <h2 class="my-title">
+      <strong>Популярное в этом месяце</strong>
+    </h2>
+  </div>
+  <div class="GRID-HACK">
+    <ul class="mini-card-grid">
+      {% for pop_post in pop_posts %}
+        {% include "posts/includes/mini_article.html" %}
+      {% endfor %}
+    </ul>
+  </div>
+</section>

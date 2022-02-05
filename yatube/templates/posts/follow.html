@@ -4,27 +4,16 @@
   Записи избранных авторов
 {% endblock title %}
 
-{% block content %}
-  <div class="container py-5">     
-    {% include "posts/includes/switcher.html" %}
-    <h1>Записи избранных авторов</h1>
+{% block content %}     
+  <header id="header">
+    <h1 class="title">
+      <strong>Записи избранных авторов</strong>
+    </h1>
+  </header>
+  <section class="row-alpha">   
     {% for post in page_obj %}
-      {% include "includes/article.html" with truncate=True all_user_posts=True %}
-      {% if post.group %}
-        {% url "posts:group_list" slug=post.group.slug  as the_url %}
-      {% else %}
-        {% url "posts:posts_without_group" as the_url %}
-      {% endif %}
-      <a 
-        href="{{ the_url }}">
-        {% if post.group %}
-          Все записи группы  {{ post.group.title}}
-        {% else %}
-          Все записи с незаполненной группой
-        {% endif %}
-      </a>
-      {% if not forloop.last %}<hr>{% endif %}
+      {% include "posts/includes/article.html" with truncate=True%}
     {% endfor %}
     {% include "posts/includes/paginator.html" %}
-  </div>
+  </section>
 {% endblock content %}

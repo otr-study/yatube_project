@@ -9,6 +9,7 @@ EMPTY_VALUE = getattr(settings, 'EMPTY_VALUE', '-')
 class PostAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
+        'title',
         'text',
         'pub_date',
         'author',
@@ -17,7 +18,7 @@ class PostAdmin(admin.ModelAdmin):
     list_editable = ('group',)
     search_fields = ('text',)
     list_filter = ('pub_date',)
-    list_display_links = ('pk', 'text')
+    list_display_links = ('pk', 'title')
     empty_value_display = EMPTY_VALUE
 
 

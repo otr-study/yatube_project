@@ -1,0 +1,78 @@
+{% with request.resolver_match.view_name as view_name %}
+  <div id="sidebar">
+    <div class="inner">
+      <!-- Search -->
+      <section id="search" class="alt">
+        <form method="post" action="#">
+          <input type="text" name="query" id="query" placeholder="Найти"/>
+        </form>
+      </section>
+
+      <!-- Menu -->
+      <nav id="menu">
+        <header class="major">
+          <div class="logo">
+            <strong>Я</strong><span class="logo_decorated">Писарь</span>
+          </div>
+        </header>
+        <ul>
+          <li>
+            <a
+            {% if view_name  == 'posts:index' %}
+              class="active-menu-item"
+            {% endif %} 
+              href="{% url 'posts:index' %}">
+              Главная
+            </a>
+          </li>
+          {% if user.is_authenticated %}
+            <li>
+              <a 
+                {% if view_name  == 'posts:follow_index' %}
+                  class="active-menu-item"
+                {% endif %}
+                href="{% url 'posts:follow_index' %}">
+                Избранное
+              </a>
+            </li>
+            <li>
+              <a
+                {% if view_name  == 'posts:post_create' %}
+                  class="active-menu-item"
+                {% endif %} 
+                href="{% url 'posts:post_create' %}">
+                Новая запись
+              </a>
+            </li>
+            <li>
+              <a
+                {% if view_name  == 'users:user_profile' %}
+                  class="active-menu-item"
+                {% endif %} 
+                href="{% url 'users:user_profile' username=user.username %}">
+                Профиль
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'users:logout' %}">
+                Выйти
+              </a>
+            </li>
+          {% else %}
+            <li>
+              <a href="{% url 'users:login' %}">
+                Войти
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'users:signup' %}">
+                Регистрация
+              </a>
+            </li>
+          {% endif %}  
+        </ul>
+      </nav>
+
+    </div>
+  </div>
+{% endwith %}

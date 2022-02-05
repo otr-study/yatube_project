@@ -1,49 +1,46 @@
 {% extends "base.html" %}
 
 {% block title %}
-  Профайл пользователя: {{ author.get_full_name }}
+  Автор: {{ author.get_full_name }}
 {% endblock title %}
 
 {% block content %}
-  <div class="container py-5">   
-    <div class="mb-5">
-      <h1>Все записи пользователя {{ author.get_full_name }} </h1>
-      <h3>Всего записей: {{ page_obj.paginator.count }} </h3>
-      {% if user != author %} 
+  <header id="header">
+    <h1 class="title">
+      <strong>Автор: </strong>
+      {{ author.get_full_name }}
+    </h1>
+  </header>
+  <section class="author-profile">
+    {% include "posts/includes/author_card.html" %}
+    {% if user != author %}
+      <div class="author-profile__footer"> 
         {% if following %}
           <a
-            class="btn btn-lg btn-light"
-            href="{% url 'posts:profile_unfollow' author.username %}"
-            role="button">
+            class="button"
+            href="{% url 'posts:profile_unfollow' author.username %}">
             Отписаться
           </a>
         {% else %}
           <a
-            class="btn btn-lg btn-primary"
-            href="{% url 'posts:profile_follow' author.username %}"
-            role="button">
+            class="button"
+            href="{% url 'posts:profile_follow' author.username %}">
             Подписаться
           </a>
         {% endif %}
-      {% endif %}
+      </div>
+    {% endif %}
+    
+    <div class="section-my-title">
+      <h2 class="my-title">
+        <strong>Все записи автора</strong>
+      </h2>
     </div>
+  </section>
+  <section class="row-alpha author-posts">   
     {% for post in page_obj %}
-      {% include "includes/article.html" %}       
-      {% if post.group %}
-        {% url "posts:group_list" slug=post.group.slug  as the_url %}
-      {% else %}
-        {% url "posts:posts_without_group" as the_url %}
-      {% endif %}
-      <a 
-        href="{{ the_url }}">
-        {% if post.group %}
-          Все записи группы {{ post.group.title }}
-        {% else %}
-          Все записи с незаполненной группой
-        {% endif %}
-      </a>       
-      {% if not forloop.last %}<hr>{% endif %}
+      {% include "posts/includes/article.html" with truncate=True%}
     {% endfor %}
-    {% include "posts/includes/paginator.html" %}  
-  </div>
+    {% include "posts/includes/paginator.html" %}
+  </section>
 {% endblock content %}

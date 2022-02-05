@@ -1,17 +1,20 @@
 {% extends "base.html" %}
 
 {% block title %}
-  Информация о группах проекта Yatube
+  Записи группы: {{ group.title|default:"---------" }}
 {% endblock title %}
 
 {% block content %}
-  <div class="container py-5">
-    <h1>{{ group.title|default:"---------" }}</h1>
-    <p>{{ group.description|default:"---------" }}</p>
+  <header id="header">
+    <h1 class="title">
+      <strong>Записи группы: </strong>
+      {{ group.title|default:"---------" }}
+    </h1>
+  </header>
+  <section class="row-alpha">   
     {% for post in page_obj %}
-      {% include "includes/article.html" with all_user_posts=True %}
-      {% if not forloop.last %}<hr>{% endif %}
+      {% include "posts/includes/article.html" with truncate=True%}
     {% endfor %}
-    {% include "posts/includes/paginator.html" %}    
-  </div>  
+    {% include "posts/includes/paginator.html" %}
+  </section>
 {% endblock content %}

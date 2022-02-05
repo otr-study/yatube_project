@@ -1,9 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
-from django.views.generic import ListView, View
+from django.views.generic import CreateView, ListView, UpdateView, View
 
 from .forms import CommentForm, PostForm
 from .models import Follow, Group, Post, User
@@ -17,10 +16,6 @@ class Index(PostListMixin, ListView):
     queryset = Post.objects.select_related(
         'group'
     ).select_related('author')
-
-    @method_decorator(cache_page(20))
-    def get(self, request):
-        return super().get(request)
 
 
 class GroupPosts(PostListMixin, ListView):
@@ -42,7 +37,9 @@ class Profile(PostListMixin, ListView):
 
     def get_queryset(self):
         self.author = get_object_or_404(User, username=self.kwargs['username'])
-        return self.author.posts.select_related('group')
+        return self.author.posts.select_related(
+            'group'
+        ).annotate(count_posts=Count('id'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -64,64 +61,37 @@ class PostDetail(View):
         return render(request, 'posts/post_detail.html', context)
 
 
-class PostCreate(LoginRequiredMixin, View):
-    def get(self, request):
-        form = PostForm()
-        return render(
-            request,
-            template_name=TEMPLATE_POST_CREATE,
-            context={'form': form}
+class PostCreate(LoginRequiredMixin, CreateView):
+    form_class = PostForm
+    template_name = TEMPLATE_POST_CREATE
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'posts:profile',
+            args=(self.request.user.username,)
         )
 
-    def post(self, request):
-        form = PostForm(
-            data=request.POST,
-            files=request.FILES
-        )
-        if form.is_valid():
-            new_post = form.save(commit=False)
-            new_post.author = request.user
-            new_post.save()
-            return redirect(
-                reverse_lazy(
-                    'posts:profile',
-                    args=(request.user.username,)
-                )
-            )
-        return render(
-            request,
-            template_name=TEMPLATE_POST_CREATE,
-            context={'form': form}
-        )
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
 
-class PostEdit(LoginRequiredMixin, PostAuthorEqualUserMixin, View):
-    def get(self, request, post_id):
-        form = PostForm(instance=self.edit_post)
-        return render(
-            request,
-            template_name=TEMPLATE_POST_CREATE,
-            context={'form': form, 'is_edit': True}
+class PostEdit(LoginRequiredMixin, PostAuthorEqualUserMixin, UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = TEMPLATE_POST_CREATE
+    pk_url_kwarg = 'post_id'
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'posts:post_detail',
+            args=(self.kwargs['post_id'],)
         )
 
-    def post(self, request, post_id):
-        form = PostForm(
-            instance=self.edit_post,
-            files=request.FILES or None,
-            data=request.POST or None)
-        if form.is_valid():
-            form.save()
-            return redirect(
-                reverse_lazy(
-                    'posts:post_detail',
-                    args=(self.edit_post.id,)
-                )
-            )
-        return render(
-            request,
-            template_name=TEMPLATE_POST_CREATE,
-            context={'form': form, 'is_edit': True}
-        )
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_edit'] = True
+        return context
 
 
 class AddComment(LoginRequiredMixin, View):

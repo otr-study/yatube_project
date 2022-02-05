@@ -1,0 +1,72 @@
+{% load thumbnail %}
+{% load static %}
+
+
+<div class="col-6 col-12-narrower">
+  <section class="box-alpha special">
+    <span class="image featured article-middle-container">
+      {% if post.image %}
+        {% thumbnail post.image "576x256" crop="center" upscale=True as im %}
+          <img 
+            src="{{ im.url }}" 
+            alt="" 
+            class="article-middle-container__image">
+        {% endthumbnail %}
+      {% else %}
+        <img 
+          src="{% static 'images/pic_alpha02.jpg' %}" 
+          alt="" 
+          class="article-middle-container__image">
+      {% endif %}   
+      <div class="article-middle">
+        <time class="article-middle__time">
+          <strong>{{ post.pub_date|date:"d.m.Y" }}</strong>
+        </time>
+        <p class="article-middle__label">
+          <strong>Автор:</strong>
+        </p>
+        <a 
+          class="article-middle__link" 
+          href="{% url 'posts:profile' username=post.author.username %}">
+          {{ post.author.get_full_name }}
+        </a>
+        <p class="article-middle__label">
+          <strong>Группа:</strong>
+        </p>
+        {% if post.group %}
+          {% url "posts:group_list" slug=post.group.slug  as the_url %}
+        {% else %}
+          {% url "posts:posts_without_group" as the_url %}
+        {% endif %}
+        <a 
+          class="article-middle__link" 
+          href="{{ the_url }}">
+          {{ post.group.title|default:"---------" }}
+        </a>
+        <ul class="article-middle__stats">
+          <li class="article-middle__stats-item">
+            <a href="#" class="article-middle__stats-heart">7</a>
+          </li>
+          <li class="article-middle__stats-item">
+            <a href="#" class="article-middle__stats-message article-middle__stats-message_solid">9</a>
+          </li>
+        </ul>
+      </div>
+    </span>
+    <h3 class="article-title-preview">
+      {{ post.title}}
+    </h3>
+    <p class="article-text-preview">
+      {{ post.text|truncatewords:20 }}
+    </p>
+    <ul class="actions special">
+      <li>
+        <a 
+          href="{% url 'posts:post_detail' post_id=post.pk %}" 
+          class="button alt">
+          Читать полностью
+        </a>
+      </li>
+    </ul>
+  </section>
+</div>

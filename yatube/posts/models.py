@@ -13,6 +13,7 @@ User = get_user_model()
 
 
 class Post(models.Model):
+    title = models.CharField('Заголовок', max_length=60)
     text = models.TextField(
         'Содержимое поста',
         help_text='Введите текст записи'

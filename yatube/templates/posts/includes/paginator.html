@@ -1,39 +1,57 @@
 {% if page_obj.has_other_pages %}
-  <nav aria-label="Page navigation" class="my-5">
-    <ul class="pagination">
-      {% if page_obj.has_previous %}
-        <li class="page-item">
-          <a class="page-link" href="?page=1">Первая</a>
-        </li>
-        <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
-            Предыдущая
-          </a>
-        </li>
-      {% endif %}
-      {% for i in page_obj.paginator.page_range %}
-          {% if page_obj.number == i %}
-            <li class="page-item active">
-              <span class="page-link">{{ i }}</span>
-            </li>
-          {% else %}
-            <li class="page-item">
-              <a class="page-link" href="?page={{ i }}">{{ i }}</a>
-            </li>
-          {% endif %}
-      {% endfor %}
-      {% if page_obj.has_next %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.next_page_number }}">
-            Следующая
-          </a>
-        </li>
-        <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
-            Последняя
-          </a>
-        </li>
-      {% endif %}    
-    </ul>
-  </nav>
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li>
+        <a class="button btn-paginator" href="?page=1">Первая</a>
+      </li>
+      <li>
+        <a class="button" href="?page={{ page_obj.previous_page_number }}">
+          &lt;&lt;
+        </a>
+      </li>
+    {% else %}
+      <li>
+        <span class="button disabled btn-paginator">
+            Первая
+        </span>
+      </li>
+      <li>
+        <span class="button disabled">
+          &lt;&lt;
+        </span>
+      </li>
+    {% endif %}
+    {% for i in page_obj.paginator.page_range %}
+      <li>  
+        {% if page_obj.number == i %}
+            <span class="page active">{{ i }}</span>
+        {% elif i >= page_obj.number|add:-2 and i <= page_obj.number|add:2 %}
+            <a class="page" href="?page={{ i }}">{{ i }}</a>
+        {% endif %}
+      </li>
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <li>
+        <a class="button" href="?page={{ page_obj.next_page_number }}">
+          &gt;&gt;
+        </a>
+      </li>
+      <li>
+        <a class="button btn-paginator" href="?page={{ page_obj.paginator.num_pages }}">
+          Последняя
+        </a>
+      </li>
+    {% else %}
+      <li>
+        <span class="button disabled">
+          &gt;&gt;
+        </span>
+      </li>
+      <li>
+        <span class="button disabled btn-paginator">
+          Последняя
+        </span>
+      </li>
+    {% endif %}    
+  </ul>
 {% endif %}

@@ -1,0 +1,24 @@
+{% load static %}
+
+<div class="author-card">
+	<div class="author-card__name">
+		<img 
+			class="avatar avatar-80" 
+			alt="" 
+			src="{% static 'images/pic12.jpg' %}">
+		<h5>
+			{{ author.get_full_name }}
+		</h5>
+	</div>
+	<ul class="author-card__stats">
+		<li class="author-card__stats-item">
+			<a href="#" class="author-card__stats-link">Подписчиков: 1</a>
+		</li>
+		<li class="author-card__stats-item">
+			<a href="#" class="author-card__stats-link">Подписан: 1</a>
+		</li>
+		<li class="author-card__stats-item">
+			Записей: {{ author.count_posts }}
+		</li>
+	</ul>
+</div>

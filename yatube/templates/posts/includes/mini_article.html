@@ -1,0 +1,38 @@
+{% load static %}
+
+<li class="mini-card module">
+  <time>
+    <strong> Запись </strong>
+    от  {{ pop_post.pub_date|date:"d.m.Y" }}
+  </time>
+  <h3 class="mini-card-title">
+    <a 
+      href="{% url 'posts:post_detail' post_id=pop_post.pk %}">
+      {{ pop_post.title }}
+    </a>
+  </h3>
+  <div class="tags">
+    {% if pop_post.group %}
+      {% url "posts:group_list" slug=pop_post.group.slug  as the_url %}
+    {% else %}
+      {% url "posts:posts_without_group" as the_url %}
+    {% endif %}
+    <a href="{{ the_url }}">
+      {{ pop_post.group.title|default:"---------" }}
+    </a>
+  </div>
+  <div class="author-row">
+    <a
+      href="{% url 'posts:profile' username=pop_post.author.username %}">
+      <img
+        alt=""
+        src="{% static 'images/pic12.jpg' %}"
+        class="avatar avatar-80">
+    </a>
+    <a 
+      class="author-name" 
+      href="{% url 'posts:profile' username=pop_post.author.username %}">
+      {{ pop_post.author.get_full_name }}
+    </a>
+  </div>
+</li>
