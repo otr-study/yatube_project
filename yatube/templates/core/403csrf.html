@@ -1,6 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
-  <div class="container py-5">
-    <h1>Ошибка проверки CSRF-токена. 403</h1>
-  </dim>
+  <header id="header">
+    <h1 class="title"><strong>Ошибка 403</strong></h1>
+  </header>
+  <section id="main-alpha" class="my-container">
+    <div class="my-box">
+      <h2 class="error-number">403</h2>
+      <div class="error-container">
+        <p class="text-center">
+          Ошибка проверки CSRF-токена.
+        </p>
+      </div>
+      <a href="{% url 'posts:index' %}" class="button">
+        Вернуться на главную
+      </a>
+    </div>
+  </section>
 {% endblock %} 

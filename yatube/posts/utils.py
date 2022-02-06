@@ -1,11 +1,11 @@
 from django.conf import settings
-from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 
-from .models import Post
+from .models import Post, User
 
 POSTS_PER_PAGE = getattr(settings, 'POSTS_PER_PAGE', 10)
+AUTHORS_PER_PAGE = getattr(settings, 'AUTHORS_PER_PAGE', 12)
 
 
 class PostListMixin:
@@ -24,3 +24,8 @@ class PostAuthorEqualUserMixin():
                 )
             )
         return super().dispatch(request, post_id)
+
+
+class AuthorsListMixin:
+    paginate_by = AUTHORS_PER_PAGE
+    model = User

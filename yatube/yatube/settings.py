@@ -104,6 +104,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 EMPTY_VALUE = '-пусто-'
 POSTS_PER_PAGE = 10
+AUTHORS_PER_PAGE = 12
 
 LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = 'posts:index'

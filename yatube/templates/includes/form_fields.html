@@ -1,24 +1,24 @@
 {% load user_filters %}
 {% csrf_token %}
 {% for field in form %}
-  <div class="form-group row my-3 p-3">
-    <label for="{{ field.id_for_label }}">
+  <div class="my-row">
+    <label for="{{ field.id_for_label }}" class="label-form">
       {{ field.label }}
       {% if field.field.required %}
-        <span class="required text-danger">*</span>
+        <span class="text-danger">*</span>
       {% endif %}
     </label>    
-    {{ field|addclass:"form-control" }}
+    {{ field }}
     {% if field.help_text %}
       <small 
         id="{{ field.id_for_label }}-help" 
-        class="form-text text-muted">
+        class="form-text">
         {{ field.help_text|safe }}
       </small>
     {% endif %}
     {% if field.errors %}
       {% for error in field.errors %}            
-        <div class="alert alert-danger">
+        <div class="text-danger">
           {{ error|escape }}
         </div>
       {% endfor %}

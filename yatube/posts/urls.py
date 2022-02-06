@@ -41,4 +41,5 @@ urlpatterns = [
         views.ProfileUnfollow.as_view(),
         name='profile_unfollow'
     ),
+    path('authors/', views.ListAuthors.as_view(), name='authors'),
 ]

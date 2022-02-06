@@ -6,7 +6,7 @@ from django.views.generic import CreateView, ListView, UpdateView, View
 
 from .forms import CommentForm, PostForm
 from .models import Follow, Group, Post, User
-from .utils import PostAuthorEqualUserMixin, PostListMixin
+from .utils import AuthorsListMixin, PostAuthorEqualUserMixin, PostListMixin
 
 TEMPLATE_POST_CREATE = 'posts/create_post.html'
 
@@ -145,3 +145,10 @@ class ProfileUnfollow(LoginRequiredMixin, View):
                 args=(username,)
             )
         )
+
+
+class ListAuthors(AuthorsListMixin, ListView):
+    template_name = 'posts/authors_list.html'
+    queryset = User.objects.annotate(
+        posts_count=Count('posts')
+    ).filter(posts_count__gt=0)

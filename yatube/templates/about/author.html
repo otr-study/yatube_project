@@ -1,16 +1,23 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Об авторе проекта{% endblock %}
+{% block title %}Об авторе{% endblock %}
 {% block content %}
-  <div class="container py-5">
-    <h1>Об авторе</h1>
-    <p>
-      Привет! Я студент Яндекс.Практикума и я 
-      люблю написать пару строчек на питоне... 
-      <img 
-        src="{% static 'img/python.jpg' %}"
-        width="1200"
-        height="600">
-    </p>
-  </div>
+  <header id="header">
+    <h1 class="title"><strong>Об авторе</strong></h1>
+  </header>
+  <section id="main-alpha" class="my-container">
+    <div class="my-box">
+      <div class="error-container">
+        <p>
+          Привет, я студент Яндекс.Практикума. Обучаюсь на двух курсах: 
+          "Python-разработчик" и "Веб-разработчик". Полученные знания 
+          пытаюсь применить в этом проекте. Что из этого  выходит, 
+          судить вам.
+        </p>
+      </div>
+      <a href="{% url 'posts:index' %}" class="button">
+        Вернуться на главную
+      </a>
+    </div>
+  </section>
 {% endblock %} 

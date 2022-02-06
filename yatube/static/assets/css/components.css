@@ -87,10 +87,23 @@
   color: #f56a6a;
 }
 
+.text-center {
+  text-align: center;
+}
+
 .my-link {
   color: inherit;
   padding: 0.75rem;
   border-bottom: none;
+}
+
+.comment-link {
+  color: inherit;
+  border-bottom: none;
+}
+
+.comment-text {
+  margin: 0;
 }
 
 .error-number {
@@ -568,7 +581,7 @@
 
 .article-comments__item {
   border: 1px solid var(--color-box-shadow);
-  margin: 2em 0;
+  margin: 3em 0 2em;
   padding: 1em;
 }
 
@@ -902,4 +915,16 @@
   .btn-paginator {
     display: none;
   }
+}
+
+.active-menu-item {
+  border-bottom: 1px solid #f56a6a !important;
+}
+
+.comment-form {
+  margin: 0 auto;
+}
+
+.tall-text {
+  margin: 10em auto 10em;
 }

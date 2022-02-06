@@ -1,4 +1,5 @@
 {% load static %}
+{% load user_filters %}
 
 <div class="author-card">
 	<div class="author-card__name">
@@ -7,7 +8,7 @@
 			alt="" 
 			src="{% static 'images/pic12.jpg' %}">
 		<h5>
-			{{ author.get_full_name }}
+			{{ author|user_repr }}
 		</h5>
 	</div>
 	<ul class="author-card__stats">
@@ -18,7 +19,15 @@
 			<a href="#" class="author-card__stats-link">Подписан: 1</a>
 		</li>
 		<li class="author-card__stats-item">
-			Записей: {{ author.count_posts }}
+			{% if request.resolver_match.view_name  == 'posts:profile' %}
+			  Записей: {{ author.posts.count }}
+      {% else %}
+        <a 
+          href="{% url 'posts:profile' username=author.username %}"
+          class="author-card__stats-link">
+          Записей: {{ author.posts.count }}
+        </a>
+      {% endif %}
 		</li>
 	</ul>
 </div>

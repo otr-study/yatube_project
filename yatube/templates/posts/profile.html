@@ -1,14 +1,15 @@
 {% extends "base.html" %}
+{% load user_filters %}
 
 {% block title %}
-  Автор: {{ author.get_full_name }}
+  Автор: {{ author|user_repr }}
 {% endblock title %}
 
 {% block content %}
   <header id="header">
     <h1 class="title">
       <strong>Автор: </strong>
-      {{ author.get_full_name }}
+      {{ author|user_repr }}
     </h1>
   </header>
   <section class="author-profile">

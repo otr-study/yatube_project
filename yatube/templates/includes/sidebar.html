@@ -36,6 +36,15 @@
               </a>
             </li>
             <li>
+              <a 
+                {% if view_name  == 'posts:authors' %}
+                  class="active-menu-item"
+                {% endif %}
+                href="{% url 'posts:authors' %}">
+                Авторы
+              </a>
+            </li>
+            <li>
               <a
                 {% if view_name  == 'posts:post_create' %}
                   class="active-menu-item"
@@ -59,6 +68,15 @@
               </a>
             </li>
           {% else %}
+            <li>
+              <a 
+                {% if view_name  == 'posts:authors' %}
+                  class="active-menu-item"
+                {% endif %}
+                href="{% url 'posts:authors' %}">
+                Авторы
+              </a>
+            </li>
             <li>
               <a href="{% url 'users:login' %}">
                 Войти

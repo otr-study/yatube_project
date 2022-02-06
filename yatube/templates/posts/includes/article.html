@@ -1,5 +1,6 @@
 {% load thumbnail %}
 {% load static %}
+{% load user_filters %}
 
 
 <div class="col-6 col-12-narrower">
@@ -28,7 +29,7 @@
         <a 
           class="article-middle__link" 
           href="{% url 'posts:profile' username=post.author.username %}">
-          {{ post.author.get_full_name }}
+          {{ post.author|user_repr }}
         </a>
         <p class="article-middle__label">
           <strong>Группа:</strong>

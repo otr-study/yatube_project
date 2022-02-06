@@ -1,14 +1,18 @@
-{% for comment in post.comments.all %}
-  <div class="media mb-4">
-    <div class="media-body">
-      <h5 class="mt-0">
-        <a href="{% url 'posts:profile' username=comment.author.username %}">
-          {{ comment.author.username }}
+{% load user_filters %}
+
+<ul class="article-comments__container">
+  {% for comment in post.comments.all %}
+    <li class="article-comments__item">
+      <h5>
+        <a
+          class="comment-link" 
+          href="{% url 'posts:profile' username=comment.author.username %}">
+          {{ comment.author|user_repr }}
         </a>
       </h5>
-      <p>
+      <p class="comment-text">
         {{ comment.text|linebreaksbr }}
       </p>
-    </div>
-  </div>
-{% endfor %}
+    </li>
+  {% endfor %}
+</ul>

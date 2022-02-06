@@ -2,15 +2,48 @@
 {% load static %}
 {% block title %}Страница 404{% endblock %}
 {% block content %}
-  <div class="container py-5">
-    <h1>Поздравляем! Вы нашли секретную страницу 404!</h1>
-    <div class="d-flex justify-content-center">
-      <img
-        width="500"
-        heigth="500"
-        src="{% static 'img/HTjD4.gif' %}">
+  <header id="header">
+    <h1 class="title"><strong>Ошибка 404</strong></h1>
+  </header>
+  <section id="main-alpha" class="my-container">
+    <div class="my-box">
+      <h2 class="error-number">404</h2>
+      <div class="error-container">
+        <p id="source-error-text" class="hidden">
+          Уважаемый посетитель, к сожалению, эта страница
+          еще не написана. Как знать, может быть именно Вам 
+          суждено стать ее автором?<br><br>
+          С уважением,<br>
+          студент Яндекс.Практикума
+        </p>
+        <p id="error-text" class="error-text"></p>
+        <div id="image-blob" class="error-container__image-blob"></div>
+      </div>
+      <a href="{% url 'posts:index' %}" class="button">
+        Вернуться на главную
+      </a>
     </div>
-    <p>Страницы с адресом {{ path }} не существует</p>
-    <a href="{% url 'posts:index' %}"> Идите на главную</a>
-  </div>
+    <script type='text/javascript'>
+      var i = 0;
+      var txt = document.getElementById("source-error-text").innerHTML.replaceAll('<br>', '&');
+      var speed = 25;
+
+      function showBlob() {
+        el = document.getElementById('image-blob').classList.add('error-container__image-blob_visible')
+      }
+
+      function typeWriter() {
+        if (i < txt.length) {
+          let ch = txt.charAt(i);
+          document.getElementById("error-text").innerHTML += (ch === '&' ? '<br>' : ch);
+          i++;
+          setTimeout(typeWriter, speed);
+        }
+        else {
+          setTimeout(showBlob, 1000);
+        }
+      }
+      typeWriter();
+    </script>
+  </section>
 {% endblock %}

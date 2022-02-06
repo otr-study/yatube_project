@@ -1,18 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Вы вышли из системы{% endblock %}
 {% block content %}
-  <div class="row justify-content-center">
-    <div class="col-md-8 p-5">
-      <div class="card">
-        <div class="card-header">
-          Выход
-        </div>
-        <div class="card-body">
-          <p>
-            Вы вышли из своей учётной записи. Ждём вас снова!
-          </p>
-        </div> <!-- card body -->
-      </div> <!-- card -->
-    </div> <!-- col -->
-  </div> <!-- row -->
+<header id="header">
+  <h1 class="title"><strong>Вы вышли из системы</strong></h1>
+</header>
+<section id="main-alpha" class="my-container">
+  <div class="my-box">
+    <p class="text-center tall-text">
+      Вы вышли из своей учётной записи. Ждём вас снова!
+    </p>
+  </div>
+</section>
 {% endblock %}

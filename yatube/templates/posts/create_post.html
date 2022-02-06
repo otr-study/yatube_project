@@ -2,39 +2,39 @@
 
 {% block title %}
   {% if is_edit %}
-    Редактировать запись
+    Изменение записи
   {% else %}
-    Добавить запись
+    Новая запись
   {% endif %}
 {% endblock title %}
 
 {% block content %}
-  <div class="row justify-content-center">
-    <div class="col-md-8 p-5">
-      <div class="card">
-        <div class="card-header">       
+  <header id="header">
+    <h1 class="title"><strong>
+      {% if is_edit %}
+        Изменение записи
+      {% else %}
+        Новая запись
+      {% endif %}
+    </strong></h1>
+  </header>
+  <section id="main-alpha" class="my-container">
+    <form 
+      class="my-box my-form"
+      method="post"
+      enctype="multipart/form-data">
+      {% csrf_token %}
+      {% include "includes/form_errors.html" %}
+      {% include "includes/form_fields.html" %}
+      <div class="my-row">
+        <button type="submit" class="button">
           {% if is_edit %}
-            Редактировать запись
+            Сохранить
           {% else %}
-            Добавить запись
-          {% endif %}            
-        </div>
-        <div class="card-body">        
-          <form method="post" enctype="multipart/form-data">
-            {% include "includes/form_errors.html" %}
-            {% include "includes/form_fields.html" %}
-            <div class="d-flex justify-content-end">
-              <button type="submit" class="btn btn-primary">
-                {% if is_edit %}
-                  Сохранить
-                {% else %}
-                  Добавить
-                {% endif %} 
-              </button>
-            </div>
-          </form>
-        </div>
+            Добавить
+          {% endif %} 
+        </button>
       </div>
-    </div>
-  </div>
+    </form>
+  </section>
 {% endblock content %}

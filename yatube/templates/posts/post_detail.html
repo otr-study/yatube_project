@@ -1,76 +1,98 @@
 {% extends "base.html" %}
-{% load thumbnail %}
 {% load user_filters %}
+{% load static %}
 
 {% block title %}
-  Запись: {{ post.text|truncatechars:30 }}
+  Запись: {{ post.title }}
 {% endblock title %}
 
 {% block content %}
-  <div class="container py-5"> 
-    <div class="row">
-      <aside class="col-12 col-md-3">
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">
-            Дата публикации: {{ post.pub_date|date:"d E Y" }}
+  <header id="header">
+    <h1 class="title">
+      <strong>Запись: </strong>
+      {{ post.title }}         
+    </h1>
+  </header>
+  <section id="main-alpha" class="my-container">
+    <div class="box-alpha">
+      <span class="image featured stats-container">
+        {% if post.image %}
+          <img 
+            src="{{ post.image.url }}" 
+            alt="" 
+            class="stats-container__image">
+        {% else %}
+          <img 
+            src="{% static 'images/pic_alpha02.jpg' %}" 
+            alt="" 
+            class="stats-container__image">
+        {% endif %}
+        <ul class="stats-container__middle">
+          <li class="stats-container__item">
+            <a href="#" class="stats-container__heart">7</a>
           </li>
-          {% if post.group %}   
-            <li class="list-group-item">
-              Группа: {{ post.group.title }}
-              <a href="{% url 'posts:group_list' slug=post.group.slug %}">
-                Все записи группы
-              </a>
-            </li>
-          {% endif %}
-
-          <li class="list-group-item">
-            Автор: {{ post.author.get_full_name }}
-          </li>
-          <li 
-            class="list-group-item d-flex justify-content-between align-items-center">
-            Всего записей автора:  <span > {{ post.author.posts.count }} </span>
-          </li>
-          <li class="list-group-item">
-            <a href="{% url 'posts:profile' username=post.author.username %}">
-              Все записи пользователя
-            </a>
+          <li class="stats-container__item">
+            <a href="#" class="stats-container__message stats-container__message_solid">9</a>
           </li>
         </ul>
-      </aside>
-      <article class="col-12 col-md-9">
-        {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
-          <img class="card-img my-2" src="{{ im.url }}">
-        {% endthumbnail %}
-        <p>
-          {{ post.text }}
+      </span>
+      <div class="row-alpha">
+        <div>
+          <h3>{{ post.title }}</h3>
+          <p>{{ post.text|linebreaksbr }}</p>
+        </div>
+      </div>
+      <div class="article-footer">
+        <time class="article-footer__time">
+          <strong>{{ post.pub_date|date:"d.m.Y" }}</strong>
+        </time>
+        <p class="article-footer__label">
+          <strong>Автор:</strong>
         </p>
-        {% if user == post.author %}
-          <a
-            class="btn btn-primary"
-            href="{% url 'posts:post_edit' post_id=post.id %}">
-            Редактировать
-          </a>
+        <a 
+          class="article-footer__link" 
+          href="{% url 'posts:profile' username=post.author.username %}">
+          {{ post.author|user_repr }}
+        </a>
+        <p class="article-footer__label">
+          <strong>Группа:</strong>
+        </p>
+        {% if post.group %}
+          {% url "posts:group_list" slug=post.group.slug  as the_url %}
+        {% else %}
+          {% url "posts:posts_without_group" as the_url %}
         {% endif %}
-        {% if user.is_authenticated %}
-          <div class="card my-4">
-            <h5 class="card-header">Добавить комментарий:</h5>
-            <div class="card-body">
-              <form 
-                method="post" 
-                action="{% url 'posts:add_comment' post_id=post.id %}">
-                {% csrf_token %}
-                {% for field in form %}
-                  <div class="form-group mb-2">
-                    {{ field|addclass:"form-control" }}
-                  </div>
-                {% endfor %}
-                <button type="submit" class="btn btn-primary">Отправить</button>
-              </form>
-            </div>
-          </div>
-        {% endif %}
-        {% include "posts/includes/comments.html" %}
-      </article>
+        <a 
+          class="article-footer__link" 
+          href="{{ the_url }}">
+          {{ post.group.title|default:"---------" }}
+        </a>
+      </div>
+      {% if user == post.author %}
+        <a 
+          href="{% url 'posts:post_edit' post_id=post.id %}" 
+          class="button">
+          Редактировать
+        </a>
+      {% endif %}
     </div>
-  </div> 
+    <section id="article-comments" class="article-comments">
+      {% if user.is_authenticated %}
+      <form
+        class="comment-form" 
+        method="post"
+        action="{% url 'posts:add_comment' post_id=post.id %}">
+        <h3>Добавьте комментарий:</h3>
+        {% csrf_token %}
+        {% for field in form %}
+          {{ field }}
+        {% endfor %}
+        <button type="submit" class="button article-comments__button">
+          Отправить
+        </button>
+      </form>
+      {% endif %}
+      {% include "posts/includes/comments.html" %}
+    </section>
+  </section>
 {% endblock content %}

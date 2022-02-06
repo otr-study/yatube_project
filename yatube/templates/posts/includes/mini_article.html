@@ -1,4 +1,5 @@
 {% load static %}
+{% load user_filters %}
 
 <li class="mini-card module">
   <time>
@@ -32,7 +33,7 @@
     <a 
       class="author-name" 
       href="{% url 'posts:profile' username=pop_post.author.username %}">
-      {{ pop_post.author.get_full_name }}
+      {{ pop_post.author|user_repr }}
     </a>
   </div>
 </li>
