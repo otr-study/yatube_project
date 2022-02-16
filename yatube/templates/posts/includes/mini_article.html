@@ -1,5 +1,6 @@
 {% load static %}
 {% load user_filters %}
+{% load thumbnail %}
 
 <li class="mini-card module">
   <time>
@@ -25,10 +26,19 @@
   <div class="author-row">
     <a
       href="{% url 'posts:profile' username=pop_post.author.username %}">
-      <img
-        alt=""
-        src="{% static 'images/pic12.jpg' %}"
-        class="avatar avatar-80">
+      {% if pop_post.author.profile.image %}
+        {% thumbnail pop_post.author.profile.image "80x80" crop="center" upscale=True as im %}
+          <img 
+                src="{{ im.url }}" 
+                alt="" 
+                class="avatar avatar-80">
+        {% endthumbnail %}
+      {% else %}
+        <img
+          alt=""
+          src="{% static 'images/pic12.jpg' %}"
+          class="avatar avatar-80">
+      {% endif %}
     </a>
     <a 
       class="author-name" 

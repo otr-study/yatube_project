@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Результаты поиска
+{% endblock title %}
+
+{% block content %}     
+  <header id="header">
+    <h1 class="title">
+      <strong>Результаты поиска по запросу:</strong>
+      {{ query }}
+    </h1>
+  </header>
+  <section class="row-alpha">   
+    {% for post in page_obj %}
+      {% include "posts/includes/article.html" with truncate=True%}
+    {% endfor %}
+    {% include "posts/includes/paginator.html" %}
+  </section>
+{% endblock content %}

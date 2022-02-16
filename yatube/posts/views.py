@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView, View
@@ -16,6 +16,23 @@ class Index(PostListMixin, ListView):
     queryset = Post.objects.select_related(
         'group'
     ).select_related('author')
+
+
+class Search(PostListMixin, ListView):
+    template_name = 'posts/search.html'
+
+    def get_queryset(self):
+        self.query = self.request.GET.get('query')
+        return Post.objects.select_related(
+            'author', 'group'
+        ).filter(
+            Q(text__icontains=self.query) | Q(title__icontains=self.query)
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.query
+        return context
 
 
 class GroupPosts(PostListMixin, ListView):

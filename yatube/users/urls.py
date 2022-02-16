@@ -13,8 +13,8 @@ app_name = 'users'
 
 urlpatterns = [
     path(
-        'user_profile/<str:username>/',
-        views.UserProfile.as_view(),
+        'user_profile/',
+        views.UserProfileView.as_view(),
         name='user_profile',
     ),
     path(

@@ -8,6 +8,7 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 PATH_POSTS_IMAGE = 'posts/'
+PATH_PROFILE_IMAGE = 'profiles/'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -33,6 +34,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'users.middleware.ProfileMiddleware',
 ]
 
 INTERNAL_IPS = [

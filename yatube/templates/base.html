@@ -22,7 +22,11 @@
       href="{% static 'img/fav/favicon-16x16.png' %}">
     <meta name="msapplication-TileColor" content="#000">
     <meta name="theme-color" content="#ffffff">
-    <link rel="stylesheet" href="{% static 'assets/css/dark-theme.css' %}">
+    {% if request.user_profile.theme == 'dark-theme' %}
+      <link rel="stylesheet" href="{% static 'assets/css/dark-theme.css' %}">
+    {% else %}
+      <link rel="stylesheet" href="{% static 'assets/css/light-theme.css' %}">
+    {% endif %}
     <link rel="stylesheet" href="{% static 'pages/index.css' %}">
     <title>
         {% block title %}

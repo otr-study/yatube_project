@@ -3,7 +3,7 @@
     <div class="inner">
       <!-- Search -->
       <section id="search" class="alt">
-        <form method="post" action="#">
+        <form method="get" action="/search/">
           <input type="text" name="query" id="query" placeholder="Найти"/>
         </form>
       </section>
@@ -58,7 +58,7 @@
                 {% if view_name  == 'users:user_profile' %}
                   class="active-menu-item"
                 {% endif %} 
-                href="{% url 'users:user_profile' username=user.username %}">
+                href="{% url 'users:user_profile' %}">
                 Профиль
               </a>
             </li>

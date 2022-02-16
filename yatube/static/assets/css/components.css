@@ -338,7 +338,7 @@
 }
 
 .stats-container:hover .stats-container__image {
-  opacity: 0.5;
+  opacity: 0.3;
 }
 
 .stats-container:hover .stats-container__middle {
@@ -599,7 +599,7 @@
 /* article-middle */
 
 .article-middle-container:hover .article-middle-container__image {
-  opacity: 0.5;
+  opacity: 0.3;
 }
 
 .article-middle-container:hover .article-middle {
@@ -927,4 +927,8 @@
 
 .tall-text {
   margin: 10em auto 10em;
+}
+
+.profile-img {
+  border-radius: 3px;
 }

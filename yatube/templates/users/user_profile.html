@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% load user_filters %}
+{% load static %}
+
+{% block title %}
+  Профиль: {{ user|user_repr }}
+{% endblock %}
+
+{% block content %}
+  <header id="header">
+    <h1 class="title">
+      <strong>Профиль: </strong>
+      {{ user|user_repr }}
+    </h1>
+  </header>
+  <section id="main-alpha" class="my-container">
+    <form 
+      class="my-box my-form"
+      method="post"
+      enctype="multipart/form-data">
+      {% csrf_token %}
+      {% if profile.image %}
+        {% thumbnail profile.image "256x256" crop="center" upscale=True as im %}
+          <img class="profile-img" src="{{ im.url }}" alt="">
+        {% endthumbnail %}
+      {% else %}
+        <img class="profile-img" src="{% static 'images/pic12.jpg' %}" alt="">
+      {% endif %}
+      {% include "includes/form_errors.html" %}
+      {% for field in form %}
+        <div class="my-row"
+          {% if field.field.required %} 
+            aria-required="true"
+          {% else %}
+            aria-required="false"
+          {% endif %}>
+          {% if field.name == 'use_pop_article' %}
+            {{ field }}
+          {% endif %}
+          <label 
+            for="{{ field.id_for_label }}" 
+            class="label-form">
+            {{ field.label }}
+            {% if field.field.required %}
+              <span class="text-danger">*</span>
+            {% endif %}
+          </label>
+          {% if field.name != 'use_pop_article' %}
+            {{ field }}
+          {% endif %}
+          {% if field.help_text %}
+            <small id="{{ field.id_for_label }}-help" 
+              class="form-text">
+              {{ field.help_text|safe }}
+            </small>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <div class="my-row">
+        <button type="submit" class="button">Сохранить</button>
+        <a 
+          href="{% url 'password_change' %}" 
+          class="my-link">
+          Сменить пароль
+        </a>
+      </div>
+    </form>
+  </section>
+{% endblock %}
