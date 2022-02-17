@@ -46,10 +46,18 @@
         </a>
         <ul class="article-middle__stats">
           <li class="article-middle__stats-item">
-            <a href="#" class="article-middle__stats-heart">7</a>
+            <a 
+              href="{% url 'posts:like' post_id=post.pk %}"
+              class="{{ post|current_user_like:user }}">
+              {{ post.likes.count }}
+            </a>
           </li>
           <li class="article-middle__stats-item">
-            <a href="#" class="article-middle__stats-message article-middle__stats-message_solid">9</a>
+            <a 
+              href="{% url 'posts:post_detail' post_id=post.pk %}#article-comments"
+              class="{{ post|current_comment_like:user }}">
+              {{ post.comments.count }}
+            </a>
           </li>
         </ul>
       </div>

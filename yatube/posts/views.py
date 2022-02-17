@@ -1,11 +1,14 @@
+import json
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView, View
 
 from .forms import CommentForm, PostForm
-from .models import Follow, Group, Post, User
+from .models import Follow, Group, Like, Post, User
 from .utils import AuthorsListMixin, PostAuthorEqualUserMixin, PostListMixin
 
 TEMPLATE_POST_CREATE = 'posts/create_post.html'
@@ -14,8 +17,10 @@ TEMPLATE_POST_CREATE = 'posts/create_post.html'
 class Index(PostListMixin, ListView):
     template_name = 'posts/index.html'
     queryset = Post.objects.select_related(
-        'group'
-    ).select_related('author')
+        'group', 'author'
+    ).prefetch_related(
+        'likes', 'comments'
+    )
 
 
 class Search(PostListMixin, ListView):
@@ -25,6 +30,8 @@ class Search(PostListMixin, ListView):
         self.query = self.request.GET.get('query')
         return Post.objects.select_related(
             'author', 'group'
+        ).prefetch_related(
+            'likes__user', 'comments__user'
         ).filter(
             Q(text__icontains=self.query) | Q(title__icontains=self.query)
         )
@@ -41,7 +48,11 @@ class GroupPosts(PostListMixin, ListView):
     def get_queryset(self):
         slug = self.kwargs.get('slug')
         self.group = slug and get_object_or_404(Group, slug=slug)
-        return Post.objects.select_related('author').filter(group=self.group)
+        return Post.objects.select_related(
+            'author'
+        ).prefetch_related(
+            'likes', 'comments'
+        ).filter(group=self.group)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -56,6 +67,8 @@ class Profile(PostListMixin, ListView):
         self.author = get_object_or_404(User, username=self.kwargs['username'])
         return self.author.posts.select_related(
             'group'
+        ).prefetch_related(
+            'likes', 'comments'
         ).annotate(count_posts=Count('id'))
 
     def get_context_data(self, **kwargs):
@@ -129,7 +142,11 @@ class FollowIndex(LoginRequiredMixin, PostListMixin, ListView):
     def get_queryset(self):
         return Post.objects.filter(
             author__following__user=self.request.user
-        ).select_related('author').select_related('group')
+        ).select_related(
+            'author', 'group'
+        ).prefetch_related(
+            'likes', 'comments'
+        )
 
 
 class ProfileFollow(LoginRequiredMixin, View):
@@ -169,3 +186,20 @@ class ListAuthors(AuthorsListMixin, ListView):
     queryset = User.objects.annotate(
         posts_count=Count('posts')
     ).filter(posts_count__gt=0)
+
+
+class PostLike(LoginRequiredMixin, View):
+    def get(self, request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        like = post.likes.filter(
+            user_id=request.user.id
+        )
+        result = {}
+        if like.exists():
+            like.delete()
+            result['result'] = False
+        else:
+            Like.objects.create(user=request.user, post=post)
+            result['result'] = True
+        result['count'] = post.likes.count()
+        return HttpResponse(json.dumps(result))

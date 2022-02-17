@@ -43,4 +43,5 @@ urlpatterns = [
     ),
     path('authors/', views.ListAuthors.as_view(), name='authors'),
     path('search/', views.Search.as_view(), name='search'),
+    path('posts/<int:post_id>/like/', views.PostLike.as_view(), name='like')
 ]

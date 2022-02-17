@@ -2065,7 +2065,9 @@ button,
           font-size: 1.5rem;
           margin-left: -0.4375em; }
       body.is-preload #sidebar {
-        display: none; } }
+        display: none; }
+        body.is-preload #toggle {
+          display: none; }  }
   @media screen and (max-width: 736px) {
     #sidebar .toggle {
       text-indent: 7.25em;

@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.cache import cache
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, View
@@ -37,6 +38,7 @@ class UserProfileView(LoginRequiredMixin, View):
         if form.is_valid():
             new_profile = form.save()
             set_session_user_profile(request, new_profile)
+            cache.clear()
             return redirect('posts:index')
         return render(
             request,

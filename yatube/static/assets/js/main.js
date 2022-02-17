@@ -22,8 +22,6 @@
 		'small-to-xlarge': '(min-width: 481px) and (max-width: 1680px)'
 	});
 
-	// Stops animations/transitions until the page has ...
-
 	// ... loaded.
 	$window.on('load', function () {
 		window.setTimeout(function () {
@@ -31,9 +29,6 @@
 		}, 100);
 	});
 
-	console.log('here');
-	if (localStorage.getItem('toogle_inactive'))
-		$('#sidebar').addClass('inactive');
 
 	// ... stopped resizing.
 	var resizeTimeout;
@@ -84,12 +79,20 @@
 
 	// Inactive by default on <= large.
 	breakpoints.on('<=large', function () {
+		$sidebar.addClass('inactive');
 		$('.toggle').addClass('toogle-left');
 	});
 
 	breakpoints.on('>large', function () {
-		$sidebar.removeClass('inactive');
-		$('.toggle').removeClass('toogle-left');
+		if (localStorage.getItem('toogle_inactive') == 'true') {
+			$('#sidebar').addClass('inactive');
+			$('.toggle').addClass('toogle-left');
+		}
+
+		else {
+			$sidebar.removeClass('inactive');
+			$('.toggle').removeClass('toogle-left');
+		}
 	});
 
 	// Hack: Workaround for Chrome/Android scrollbar position bug.
@@ -99,7 +102,7 @@
 			.appendTo($head);
 
 	// Toggle.
-	$('<a href="#sidebar" class="toggle">Toggle</a>')
+	$('<a href="#sidebar" id="toggle" class="toggle">Toggle</a>')
 		.appendTo($sidebar)
 		.on('click', function (event) {
 

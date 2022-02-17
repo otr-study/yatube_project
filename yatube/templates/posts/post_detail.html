@@ -29,10 +29,18 @@
         {% endif %}
         <ul class="stats-container__middle">
           <li class="stats-container__item">
-            <a href="#" class="stats-container__heart">7</a>
+            <a 
+              href="{% url 'posts:like' post_id=post.pk %}" 
+              class="{{ post|current_user_like:user }}">
+              {{ post.likes.count }}
+            </a>
           </li>
           <li class="stats-container__item">
-            <a href="#" class="stats-container__message stats-container__message_solid">9</a>
+            <a 
+              href=href="{% url 'posts:post_detail' post_id=post.pk %}#article-comments" 
+              class="{{ post|current_comment_like:user }}">
+              {{ post.comments.count }}
+            </a>
           </li>
         </ul>
       </span>

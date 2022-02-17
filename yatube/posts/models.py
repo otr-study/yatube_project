@@ -119,3 +119,28 @@ class Follow(models.Model):
         )
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
+
+
+class Like(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='likes',
+        verbose_name='Пользователь'
+    )
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name='likes',
+        verbose_name='Запись'
+    )
+
+    class Meta:
+        constraints = (
+            UniqueConstraint(
+                fields=('user', 'post',),
+                name='unique_like'
+            ),
+        )
+        verbose_name = 'Симпотка'
+        verbose_name_plural = 'Симпотки'
