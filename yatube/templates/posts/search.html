@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load static %}
+
 
 {% block title %}
   Результаты поиска
@@ -18,3 +20,7 @@
     {% include "posts/includes/paginator.html" %}
   </section>
 {% endblock content %}
+
+{% block scripts %}
+  <script src="{% static 'assets/js/posts.js' %}"></script>
+{% endblock scripts %}

@@ -1,8 +1,9 @@
 from django.conf import settings
+from django.db.models import OuterRef
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 
-from .models import Post, User
+from .models import Comment, Like, Post, User
 
 POSTS_PER_PAGE = getattr(settings, 'POSTS_PER_PAGE', 10)
 AUTHORS_PER_PAGE = getattr(settings, 'AUTHORS_PER_PAGE', 12)
@@ -29,3 +30,17 @@ class PostAuthorEqualUserMixin():
 class AuthorsListMixin:
     paginate_by = AUTHORS_PER_PAGE
     model = User
+
+
+def queryset_cur_user_likes(request):
+    return Like.objects.filter(
+        user__username=request.user.username,
+        post=OuterRef('pk')
+    )
+
+
+def queryset_cur_user_comments(request):
+    return Comment.objects.filter(
+        author__username=request.user.username,
+        post=OuterRef('pk')
+    )

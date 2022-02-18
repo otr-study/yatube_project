@@ -286,6 +286,7 @@
 .mini-card-title {
   font-size: 1.3rem;
   margin: 0 0 1rem;
+  max-width: 300px;
 }
 
 .module {

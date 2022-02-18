@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load user_filters %}
+{% load static %}
 
 {% block title %}
   Автор: {{ author|user_repr }}
@@ -45,3 +46,7 @@
     {% include "posts/includes/paginator.html" %}
   </section>
 {% endblock content %}
+
+{% block scripts %}
+  <script src="{% static 'assets/js/posts.js' %}"></script>
+{% endblock scripts %}

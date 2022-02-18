@@ -14,18 +14,16 @@ def user_repr(user):
 
 
 @register.filter
-def current_user_like(post, user):
-    if not user.is_authenticated or not post.likes.filter(user=user).exists():
+def current_user_like(post):
+    if not post.cur_user_like:
         return 'article-middle__stats-heart'
-    else:
-        return 'article-middle__stats-heart article-middle__stats-heart_solid'
+
+    return 'article-middle__stats-heart article-middle__stats-heart_solid'
 
 
 @register.filter
-def current_comment_like(post, user):
-    if not user.is_authenticated or not post.comments.filter(
-        author=user
-    ).exists():
+def current_comment_like(post):
+    if not post.cur_user_comment:
         return 'article-middle__stats-message'
-    else:
-        return 'article-middle__stats-message article-middle__stats-message_solid'
+
+    return 'article-middle__stats-message article-middle__stats-message_solid'

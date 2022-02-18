@@ -31,14 +31,15 @@
           <li class="stats-container__item">
             <a 
               href="{% url 'posts:like' post_id=post.pk %}" 
-              class="{{ post|current_user_like:user }}">
+              class="{{ post|current_user_like }}"
+              id="article_heart_{{ post.pk }}">
               {{ post.likes.count }}
             </a>
           </li>
           <li class="stats-container__item">
             <a 
               href=href="{% url 'posts:post_detail' post_id=post.pk %}#article-comments" 
-              class="{{ post|current_comment_like:user }}">
+              class="{{ post|current_comment_like }}">
               {{ post.comments.count }}
             </a>
           </li>
