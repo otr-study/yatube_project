@@ -38,11 +38,13 @@ class PostTestCase(TestCase):
         user = kwargs.get('user') or cls.user
         postfix = kwargs.get('postfix') or ''
         image = kwargs.get('image') or None
+        title = kwargs.get('title') or 'Заголовок тестовый'
         return Post.objects.create(
             author=user,
             text=f'Текст большого-пребольшого тестового поста {postfix}',
             group=group,
             image=image,
+            title=title,
         )
 
     @classmethod

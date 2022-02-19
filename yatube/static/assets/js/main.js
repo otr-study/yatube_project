@@ -123,6 +123,20 @@
 
 		});
 
+	// Go top
+	$('<a href="#" id="go-top" class="go-top"></a>')
+		.appendTo($('#main'))
+		.on('click', function (event) {
+
+			// Prevent default.
+			event.preventDefault();
+			event.stopPropagation();
+
+			document.body.scrollTop = 0; // For Safari
+			document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+
+		});
+
 	// Events.
 
 	// Link clicks.
@@ -279,5 +293,15 @@
 		});
 
 	});
+
+	window.onscroll = function () { scrollFunction() };
+
+	function scrollFunction() {
+		if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+			$('#go-top').addClass('go-top_active');
+		} else {
+			$('#go-top').removeClass('go-top_active');
+		}
+	}
 
 })(jQuery);

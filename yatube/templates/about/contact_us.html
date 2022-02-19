@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Связаться с нами{% endblock %}
+{% load user_filters %}
+{% block content %}
+  <header id="header">
+    <h1 class="title"><strong>Связаться с нами</strong></h1>
+  </header>
+  <section id="main-alpha" class="my-container">
+    <form 
+      class="my-box my-form">
+      <div class="my-row">
+        <label for="id_email" class="label-form">
+          Адрес электронной почты
+        </label>
+        <input type="text" name="email" maxlength="30" id="id_email">
+      </div>
+      <div class="my-row">
+        <label for="id_email" class="label-form">
+          Текст сообщения
+        </label>
+        <textarea 
+            name="message" 
+            id="message" 
+            placeholder="Текст сообщения" 
+            rows="6">
+        </textarea>
+        <p class="form-text">Данная форма является декоративной, никакой
+          функциональной нагрузки в себе не несет.
+        </p>
+      </div>
+      <div class="my-row">
+        <a 
+          href="{% url 'posts:index' %}" 
+          class="button">
+          Отправить
+        </a>
+      </div>
+    </form>
+  </section>
+{% endblock %}
+        

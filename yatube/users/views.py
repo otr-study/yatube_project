@@ -38,7 +38,8 @@ class UserProfileView(LoginRequiredMixin, View):
         if form.is_valid():
             new_profile = form.save()
             set_session_user_profile(request, new_profile)
-            cache.clear()
+            cache_key = f'index_{self.request.user.username}'
+            cache.delete(cache_key)
             return redirect('posts:index')
         return render(
             request,

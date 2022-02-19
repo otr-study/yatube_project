@@ -21,6 +21,7 @@ class PostFormTests(PostTestCase):
             'text': 'Запись добавленная при тестировании формы',
             'group': self.group.id,
             'image': self.create_img(filename=img_name),
+            'title': 'Тестовый заголовок',
         }
         response = self.client.post(
             reverse('posts:post_create'),
@@ -66,6 +67,7 @@ class PostFormTests(PostTestCase):
         """Форма редактирует запись в Post."""
         img_name = 'tst_edit.gif'
         form_data = {
+            'title': 'Тестовый заголовок',
             'text': 'Запись измененная при тестировании формы',
             'group': self.group.id,
             'image': self.create_img(filename=img_name),

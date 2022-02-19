@@ -22,6 +22,7 @@ URLS_WITH_POP_ARTICLE = (
 @register.inclusion_tag('posts/popular_articles.html')
 def popular_articles(request):
     render = (request.user_profile['use_pop_article']
+              and request.resolver_match
               and request.resolver_match.view_name in URLS_WITH_POP_ARTICLE)
     pop_posts = []
     query = ('SELECT COUNT("posts_like"."id") AS "count_like", '

@@ -7,17 +7,25 @@
         event.preventDefault();
         event.stopPropagation();
 
-        // $.get(event.target.href, function (data) {
-        //     alert('1')
-
-        // });
-        $.ajax({
-            url: event.target.href,
-            success: function (data) {
-                alert('1')
-
-            }
-        });
+        fetch(event.target.href)
+            .then((response) => {
+                if (response.ok)
+                    if (response.redirected) {
+                        window.location.replace(response.url.split('?')[0]);
+                    }
+                    else
+                        return response.json();
+            })
+            .then((data) => {
+                let hearts = $('#article_heart_' + data.post_id);
+                if (hearts.length) {
+                    hearts[0].innerText = ` ${data.count}`;
+                    if (data.result)
+                        hearts.addClass('article-middle__stats-heart_solid')
+                    else
+                        hearts.removeClass('article-middle__stats-heart_solid')
+                }
+            });
 
     })
 })(jQuery);
