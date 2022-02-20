@@ -37,7 +37,7 @@ def popular_articles(request):
              'LEFT OUTER JOIN "posts_group" ON ("posts_post"."group_id" = "posts_group"."id") '
              'WHERE "posts_post"."pub_date" BETWEEN %s AND %s '
              'GROUP BY "posts_post"."id", "posts_post"."title", "posts_post"."pub_date", "posts_post"."author_id", "posts_post"."group_id", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "users_userprofile"."image", "posts_group"."id", "posts_group"."title", "posts_group"."slug" '
-             'ORDER BY "count_like" DESC  '
+             'ORDER BY "count_like" DESC, "posts_post"."pub_date" DESC '
              'LIMIT 10')
     if render:
         pop_posts = cache.get('pop_posts')

@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db.models import OuterRef
+from django.db.models import Count, OuterRef
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 
@@ -28,6 +28,7 @@ class PostAuthorEqualUserMixin():
 
 
 class AuthorsListMixin:
+    template_name = 'posts/authors_list.html'
     paginate_by = AUTHORS_PER_PAGE
     model = User
 
@@ -44,3 +45,9 @@ def queryset_cur_user_comments(request):
         author__username=request.user.username,
         post=OuterRef('pk')
     )
+
+
+def queryset_user_follow_stats():
+    return User.objects.filter(
+        pk=OuterRef('pk')
+    ).annotate(Count('follower'), Count('following'))

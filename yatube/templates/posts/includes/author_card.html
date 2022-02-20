@@ -1,22 +1,38 @@
 {% load static %}
 {% load user_filters %}
+{% load thumbnail %}
 
 <div class="author-card">
 	<div class="author-card__name">
 		<img 
 			class="avatar avatar-80" 
-			alt="" 
-			src="{% static 'images/pic12.jpg' %}">
+			alt=""
+			{% if author.profile.image %}
+				{% thumbnail author.profile.image "80x80" crop="center" upscale=True as im %}
+          src="{{ im.url }}"
+        {% endthumbnail %}
+      {% else %}
+			  src="{% static 'images/pic12.jpg' %}"
+      {% endif %}
+		>
 		<h5>
 			{{ author|user_repr }}
 		</h5>
 	</div>
 	<ul class="author-card__stats">
 		<li class="author-card__stats-item">
-			<a href="#" class="author-card__stats-link">Подписчиков: 1</a>
+			<a 
+				href="{% url 'posts:list_followers' username=author.username %}" 
+				class="author-card__stats-link">
+				Подписчиков: {{ author.following__count }}
+			</a>
 		</li>
 		<li class="author-card__stats-item">
-			<a href="#" class="author-card__stats-link">Подписан: 1</a>
+			<a 
+			href="{% url 'posts:list_followings' username=author.username %}"
+				class="author-card__stats-link">
+				Подписан: {{ author.follower__count }}
+			</a>
 		</li>
 		<li class="author-card__stats-item">
 			{% if request.resolver_match.view_name  == 'posts:profile' %}
