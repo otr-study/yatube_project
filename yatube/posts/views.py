@@ -12,7 +12,7 @@ from .forms import CommentForm, PostForm
 from .models import Comment, Follow, Group, Like, Post, User
 from .utils import (AuthorsListMixin, PostAuthorEqualUserMixin, PostListMixin,
                     queryset_cur_user_comments, queryset_cur_user_likes,
-                    queryset_user_follow_stats)
+                    queryset_user_followers, queryset_user_followings)
 
 TEMPLATE_POST_CREATE = 'posts/create_post.html'
 
@@ -256,7 +256,8 @@ class ProfileUnfollow(LoginRequiredMixin, View):
 
 
 class ListAuthors(AuthorsListMixin, ListView):
-    q_user_stats = queryset_user_follow_stats()
+    q_user_followers = queryset_user_followers()
+    q_user_followings = queryset_user_followings()
     queryset = User.objects.annotate(
         posts_count=Count('posts')
     ).filter(
@@ -265,10 +266,10 @@ class ListAuthors(AuthorsListMixin, ListView):
         'profile'
     ).annotate(
         follower__count=Subquery(
-            q_user_stats.values('follower__count')[:1]
+            q_user_followers.values('follower__count')[:1]
         ),
         following__count=Subquery(
-            q_user_stats.values('following__count')[:1]
+            q_user_followings.values('following__count')[:1]
         )
     )
 
@@ -276,23 +277,23 @@ class ListAuthors(AuthorsListMixin, ListView):
 class ListFollowers(AuthorsListMixin, ListView):
     def get_queryset(self):
         username = self.kwargs['username']
-        q_user_stats = queryset_user_follow_stats()
+        q_user_followers = queryset_user_followers()
+        q_user_followings = queryset_user_followings()
         followers = Follow.objects.filter(
             author__username=username
         ).values('user')
         return User.objects.annotate(
             posts_count=Count('posts')
         ).filter(
-            posts_count__gt=0,
             pk__in=followers
         ).prefetch_related(
             'profile'
         ).annotate(
             follower__count=Subquery(
-                q_user_stats.values('follower__count')[:1]
+                q_user_followers.values('follower__count')[:1]
             ),
             following__count=Subquery(
-                q_user_stats.values('following__count')[:1]
+                q_user_followings.values('following__count')[:1]
             )
         )
 
@@ -300,23 +301,23 @@ class ListFollowers(AuthorsListMixin, ListView):
 class ListFollowings(AuthorsListMixin, ListView):
     def get_queryset(self):
         username = self.kwargs['username']
-        q_user_stats = queryset_user_follow_stats()
+        q_user_followers = queryset_user_followers()
+        q_user_followings = queryset_user_followings()
         followings = Follow.objects.filter(
             user__username=username
         ).values('author')
         return User.objects.annotate(
             posts_count=Count('posts')
         ).filter(
-            posts_count__gt=0,
             pk__in=followings
         ).prefetch_related(
             'profile'
         ).annotate(
             follower__count=Subquery(
-                q_user_stats.values('follower__count')[:1]
+                q_user_followers.values('follower__count')[:1]
             ),
             following__count=Subquery(
-                q_user_stats.values('following__count')[:1]
+                q_user_followings.values('following__count')[:1]
             )
         )
 

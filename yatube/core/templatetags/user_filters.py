@@ -22,7 +22,7 @@ def current_user_like(post):
 
 
 @register.filter
-def current_comment_like(post):
+def current_user_comment(post):
     if not post.cur_user_comment:
         return 'article-middle__stats-message'
 

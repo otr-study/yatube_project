@@ -47,7 +47,13 @@ def queryset_cur_user_comments(request):
     )
 
 
-def queryset_user_follow_stats():
+def queryset_user_followers():
     return User.objects.filter(
         pk=OuterRef('pk')
-    ).annotate(Count('follower'), Count('following'))
+    ).annotate(Count('follower')).only('follower__count')
+
+
+def queryset_user_followings():
+    return User.objects.filter(
+        pk=OuterRef('pk')
+    ).annotate(Count('following')).only('following__count')

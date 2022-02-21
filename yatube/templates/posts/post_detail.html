@@ -38,8 +38,8 @@
           </li>
           <li class="stats-container__item">
             <a 
-              href=href="{% url 'posts:post_detail' post_id=post.pk %}#article-comments" 
-              class="{{ post|current_comment_like }}">
+              href="#article-comments" 
+              class="{{ post|current_user_comment }}">
               {{ post.comments.count }}
             </a>
           </li>

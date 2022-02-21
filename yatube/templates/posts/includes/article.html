@@ -56,7 +56,7 @@
           <li class="article-middle__stats-item">
             <a 
               href="{% url 'posts:post_detail' post_id=post.pk %}#article-comments"
-              class="{{ post|current_comment_like }}">
+              class="{{ post|current_user_comment }}">
               {{ post.comments.count }}
             </a>
           </li>
