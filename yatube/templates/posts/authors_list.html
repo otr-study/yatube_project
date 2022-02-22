@@ -1,13 +1,16 @@
 {% extends "base.html" %}
+{% load user_filters %}
 
 {% block title %}
-  Список авторов
+  {{ title }}
+  {{ subject|user_repr }}
 {% endblock title %}
 
 {% block content %}
     <header id="header">
       <h1 class="title">
-        <strong>Список авторов</strong>          
+        <strong>{{ title }}</strong>
+        {{ subject|user_repr }}
       </h1>
     </header>
     <section class="authors">

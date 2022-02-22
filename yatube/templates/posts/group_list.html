@@ -16,8 +16,8 @@
     {% for post in page_obj %}
       {% include "posts/includes/article.html" with truncate=True%}
     {% endfor %}
-    {% include "posts/includes/paginator.html" %}
   </section>
+  {% include "posts/includes/paginator.html" %}
 {% endblock content %}
 
 {% block scripts %}

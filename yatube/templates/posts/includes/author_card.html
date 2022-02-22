@@ -24,14 +24,22 @@
 			<a 
 				href="{% url 'posts:list_followers' username=author.username %}" 
 				class="author-card__stats-link">
-				Подписчиков: {{ author.following__count }}
+				{% if author.following__count %}
+					Подписчиков: {{ author.following__count }}
+				{% else %}
+					Подписчиков: {{ author.following.count }}
+				{% endif %}
 			</a>
 		</li>
 		<li class="author-card__stats-item">
 			<a 
 			href="{% url 'posts:list_followings' username=author.username %}"
 				class="author-card__stats-link">
-				Подписан: {{ author.follower__count }}
+				{% if author.follower__count %}
+					Подписан: {{ author.follower__count }}
+				{% else %}
+					Подписан: {{ author.follower.count }}
+				{% endif %}
 			</a>
 		</li>
 		<li class="author-card__stats-item">

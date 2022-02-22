@@ -273,10 +273,16 @@ class ListAuthors(AuthorsListMixin, ListView):
         )
     )
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Список авторов'
+        return context
+
 
 class ListFollowers(AuthorsListMixin, ListView):
     def get_queryset(self):
         username = self.kwargs['username']
+        self.subject = get_object_or_404(User, username=username)
         q_user_followers = queryset_user_followers()
         q_user_followings = queryset_user_followings()
         followers = Follow.objects.filter(
@@ -297,10 +303,17 @@ class ListFollowers(AuthorsListMixin, ListView):
             )
         )
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Подписчики: '
+        context['subject'] = self.subject
+        return context
+
 
 class ListFollowings(AuthorsListMixin, ListView):
     def get_queryset(self):
         username = self.kwargs['username']
+        self.subject = get_object_or_404(User, username=username)
         q_user_followers = queryset_user_followers()
         q_user_followings = queryset_user_followings()
         followings = Follow.objects.filter(
@@ -320,6 +333,12 @@ class ListFollowings(AuthorsListMixin, ListView):
                 q_user_followings.values('following__count')[:1]
             )
         )
+
+    def get_context_data(self, **kwargs):        
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Подписан: '
+        context['subject'] = self.subject
+        return context
 
 
 class PostLike(LoginRequiredMixin, View):
