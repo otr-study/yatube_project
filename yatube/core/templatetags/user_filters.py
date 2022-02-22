@@ -11,7 +11,7 @@ def addclass(field, css):
 @register.filter
 def user_repr(user):
     if not user:
-        return None
+        return ''
     return user.get_full_name() or user.get_username()
 
 
