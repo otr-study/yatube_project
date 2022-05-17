@@ -1,7 +1,11 @@
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SECRET_KEY = 'v#ao+(64%tn4df*v9*&*mkfdu+05y098uz6*olj2mg66)f5mph'
+SECRET_KEY = os.getenv('YATUBE_SECRET_KEY')
 DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver']
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')

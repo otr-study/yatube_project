@@ -2,7 +2,6 @@ import datetime
 
 from django import template
 from django.core.cache import cache
-from django.db.models import Count
 from posts.models import Post
 
 register = template.Library()
@@ -16,6 +15,8 @@ URLS_WITH_POP_ARTICLE = (
     'posts:follow_index',
     'posts:authors',
     'posts:search',
+    'posts:list_followers',
+    'posts:list_followings',
 )
 
 
