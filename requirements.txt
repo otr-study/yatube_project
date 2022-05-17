@@ -4,3 +4,4 @@ pkg_resources==0.0.0
 sorl-thumbnail==12.7.0
 sqlparse==0.4.2
 toml==0.10.2
+python-dotenv==0.20.0
